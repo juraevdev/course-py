@@ -1,26 +1,100 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --canvas: #f7f6f3;
+  --ink: #111111;
+  --body: #2f3437;
+  --muted: #787774;
+  --line: #eaeaea;
+  --surface: #ffffff;
+  --btn-bg: #111111;
+  --btn-fg: #ffffff;
+  --btn-hover: #333333;
+  --btn-secondary-bg: #ffffff;
+  --btn-secondary-fg: #111111;
+  --btn-secondary-hover: #f9f9f8;
+  --color-background: var(--canvas);
+  --color-foreground: var(--ink);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html.dark {
+  --canvas: #141414;
+  --ink: #f4f4f3;
+  --body: #d4d4d0;
+  --muted: #9a9a94;
+  --line: #2a2a2a;
+  --surface: #1c1c1c;
+  --btn-bg: #f4f4f3;
+  --btn-fg: #111111;
+  --btn-hover: #e4e4e0;
+  --btn-secondary-bg: #1c1c1c;
+  --btn-secondary-fg: #f4f4f3;
+  --btn-secondary-hover: #252525;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--canvas);
+  color: var(--body);
+  font-family: var(--font-geist-sans), "Helvetica Neue", sans-serif;
+  line-height: 1.6;
+}
+
+.ambient {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 12% 8%, rgba(225, 243, 254, 0.35), transparent 60%),
+    radial-gradient(ellipse 50% 35% at 88% 12%, rgba(251, 243, 219, 0.28), transparent 55%),
+    linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.015) 100%);
+}
+
+html.dark .ambient {
+  background:
+    radial-gradient(ellipse 60% 40% at 12% 8%, rgba(31, 108, 159, 0.12), transparent 60%),
+    radial-gradient(ellipse 50% 35% at 88% 12%, rgba(149, 100, 0, 0.08), transparent 55%),
+    linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.02) 100%);
+}
+
+.reveal {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ambient {
+    animation: drift 28s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(1.5%, 1%, 0);
+  }
+}
+
+.prose-kurs {
+  white-space: pre-wrap;
+  color: var(--body);
+  line-height: 1.7;
+}
+
+.progress-bar {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: var(--line);
+}
+
+.progress-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--ink);
 }

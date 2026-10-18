@@ -1,0 +1,11 @@
+# O‘quvchi kodini ishga tushirish uchun minimal Python image.
+# Tarmoq yo‘q, faqat skriptni o‘qiydi.
+FROM python:3.12-slim-bookworm
+
+WORKDIR /code
+
+# Root emas — kamroq huquq
+RUN useradd -m -u 10001 runner
+USER runner
+
+CMD ["python", "-I", "main.py"]

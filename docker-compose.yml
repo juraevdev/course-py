@@ -1,0 +1,20 @@
+services:
+  runner:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: kurs-runner:latest
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_DEBUG: "1"
+      DJANGO_ALLOWED_HOSTS: "*"
+      CORS_ALLOWED_ORIGINS: "http://localhost:3000,http://127.0.0.1:3000"
+      RUNNER_USE_DOCKER: "1"
+      RUNNER_DOCKER_IMAGE: kurs-sandbox:latest
+      RUNNER_TIMEOUT_SECONDS: "5"
+      RUNNER_DOCKER_MEMORY: "128m"
+      RUNNER_DOCKER_CPUS: "0.5"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped

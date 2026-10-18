@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kurs — dasturlash
 
-## Getting Started
+Offline dasturlash kursi: o‘quvchi hisoblari, mavzular, topshiriqlar, Python editor + Docker sandbox.
 
-First, run the development server:
+## Frontend (Next.js)
 
 ```bash
+npm install
+npm run db:setup
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Rol | Email | Parol |
+|-----|-------|-------|
+| O‘qituvchi | oqituvchi@kurs.uz | kurs1234 |
+| O‘quvchi | jasur@kurs.uz | kurs1234 |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Backend — Python runner
 
-## Learn More
+### Local
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+cd backend
+.\.venv\Scripts\activate
+python manage.py runserver 8000
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Docker sandbox (server)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# Sandbox image
+docker build -f backend/Dockerfile.sandbox -t kurs-sandbox:latest backend
 
-## Deploy on Vercel
+# API (docker.sock orqali yangi konteyner ochadi)
+docker compose up -d --build runner
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+API: [http://127.0.0.1:8000/api/health/](http://127.0.0.1:8000/api/health/)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Asosiy imkoniyatlar
+
+- O‘qituvchi: mavzu/topshiriq, o‘quvchi qo‘shish, javoblarni ko‘rish
+- O‘quvchi: progress, muddat, savol, eslatma, Kod/Javob, Python Run
+- Bildirishnoma: faqat sayt ichida (email yo‘q)

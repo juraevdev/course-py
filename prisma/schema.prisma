@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  TEACHER
+  STUDENT
+}
+
+enum AssignmentStatus {
+  PENDING
+  SUBMITTED
+  REVIEWED
+}
+
+enum SubmissionKind {
+  TEXT
+  CODE
+}
+
+model User {
+  id            String                  @id @default(cuid())
+  name          String
+  email         String                  @unique
+  passwordHash  String
+  role          Role
+  createdAt     DateTime                @default(now())
+  topics        Topic[]                 @relation("TopicAuthor")
+  assignments   Assignment[]            @relation("AssignmentAuthor")
+  submissions   Submission[]
+  notifications Notification[]
+  topicViews    TopicView[]
+  questions     TopicQuestion[]         @relation("QuestionAuthor")
+  answers       TopicQuestion[]         @relation("QuestionAnswerer")
+  notes         StudentNote[]
+  prefs         NotificationPreference?
+}
+
+model Topic {
+  id          String          @id @default(cuid())
+  title       String
+  summary     String
+  content     String
+  resourceUrl String?
+  authorId    String
+  author      User            @relation("TopicAuthor", fields: [authorId], references: [id])
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  assignments Assignment[]
+  views       TopicView[]
+  questions   TopicQuestion[]
+  notes       StudentNote[]
+}
+
+model Assignment {
+  id          String           @id @default(cuid())
+  title       String
+  description String
+  dueAt       DateTime?
+  topicId     String
+  topic       Topic            @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  authorId    String
+  author      User             @relation("AssignmentAuthor", fields: [authorId], references: [id])
+  createdAt   DateTime         @default(now())
+  submissions Submission[]
+}
+
+model Submission {
+  id           String           @id @default(cuid())
+  content      String
+  kind         SubmissionKind   @default(TEXT)
+  status       AssignmentStatus @default(SUBMITTED)
+  feedback     String?
+  fileName     String?
+  filePath     String?
+  assignmentId String
+  assignment   Assignment       @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      User             @relation(fields: [studentId], references: [id])
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@unique([assignmentId, studentId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  body      String
+  href      String?
+  read      Boolean  @default(false)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model TopicView {
+  id       String   @id @default(cuid())
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topicId  String
+  topic    Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  viewedAt DateTime @default(now())
+
+  @@unique([userId, topicId])
+}
+
+model TopicQuestion {
+  id         String    @id @default(cuid())
+  body       String
+  answer     String?
+  topicId    String
+  topic      Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  studentId  String
+  student    User      @relation("QuestionAuthor", fields: [studentId], references: [id])
+  answeredBy String?
+  answerer   User?     @relation("QuestionAnswerer", fields: [answeredBy], references: [id])
+  createdAt  DateTime  @default(now())
+  answeredAt DateTime?
+}
+
+model StudentNote {
+  id        String   @id @default(cuid())
+  title     String
+  body      String
+  studentId String
+  student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  topicId   String?
+  topic     Topic?   @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model NotificationPreference {
+  userId          String  @id
+  user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailEnabled    Boolean @default(false)
+  telegramEnabled Boolean @default(false)
+  telegramChatId  String?
+}

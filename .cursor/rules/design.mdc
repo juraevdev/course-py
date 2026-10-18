@@ -1,0 +1,21 @@
+---
+alwaysApply: true
+---
+
+# Design system: Premium Utilitarian Minimalism
+
+Follow `.agents/skills/minimalist-ui/SKILL.md` for all UI work.
+
+## Must
+- Warm monochrome canvas (`#F7F6F3` / `#FFFFFF`), charcoal text (`#111111` / `#2F3437`), muted secondary (`#787774`)
+- Borders: `1px solid #EAEAEA`; radius max `8–12px` for surfaces, `4–6px` for buttons
+- Typography: Geist / Helvetica Neue / system sans for UI; Newsreader or Instrument Serif for display headings — never Inter, Roboto, or Open Sans
+- Accents only via muted pastels (pale red/blue/green/yellow tags)
+- Icons: Phosphor (Bold/Fill) or Radix — not Lucide/Feather/Heroicons
+- Quiet motion: opacity + transform only; respect `prefers-reduced-motion`
+
+## Must not
+- Gradients, neon, glassmorphism, heavy shadows, pill-shaped large containers
+- Emojis in UI copy
+- Generic SaaS purple themes or cream+terracotta clichés
+- Dashboard clutter on first student/teacher views — one clear job per screen
