@@ -12,10 +12,7 @@ npm run dev
 
 [http://localhost:3000](http://localhost:3000)
 
-| Rol | Email | Parol |
-|-----|-------|-------|
-| O‘qituvchi | oqituvchi@kurs.uz | kurs1234 |
-| O‘quvchi | jasur@kurs.uz | kurs1234 |
+O‘qituvchi hisobi `npm run db:seed` orqali yaratiladi (email/parol `prisma/seed.ts` da).
 
 ## Backend — Python runner
 

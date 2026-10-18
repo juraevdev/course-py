@@ -26,11 +26,6 @@ export default async function LoginPage() {
           <div className="mt-8">
             <LoginForm />
           </div>
-          <div className="mt-8 border-t border-[var(--line)] pt-5 text-xs leading-relaxed text-[var(--muted)]">
-            <p className="font-[family-name:var(--font-mono)]">Demo:</p>
-            <p className="mt-1">oqituvchi@kurs.uz / kurs1234</p>
-            <p>jasur@kurs.uz / kurs1234</p>
-          </div>
         </Panel>
       </div>
     </div>

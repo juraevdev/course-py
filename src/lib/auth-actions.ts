@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { Role } from "@prisma/client";
@@ -9,6 +10,7 @@ import {
   verifyPassword,
 } from "./auth";
 import { prisma } from "./prisma";
+import { rateLimit } from "./rate-limit";
 
 export type ActionState = {
   error?: string;
@@ -17,13 +19,26 @@ export type ActionState = {
 
 const loginSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(4),
+  password: z.string().min(6),
 });
 
 export async function loginAction(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const hdrs = await headers();
+  const ip =
+    hdrs.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    hdrs.get("x-real-ip") ||
+    "unknown";
+  const emailRaw = String(formData.get("email") || "").toLowerCase();
+  const limited = await rateLimit(`login:${ip}:${emailRaw}`, 8, 15 * 60_000);
+  if (!limited.ok) {
+    return {
+      error: `Juda ko‘p urinish. ${limited.retryAfterSec} soniyadan keyin qayta urinib ko‘ring.`,
+    };
+  }
+
   const parsed = loginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),

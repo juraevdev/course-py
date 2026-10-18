@@ -29,17 +29,25 @@ export async function GET(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const absolute = path.join(
-    /* turbopackIgnore: true */ process.cwd(),
-    "uploads",
-    ...submission.filePath.replace(/^uploads[\\/]/, "").split(/[\\/]/),
-  );
+  const uploadsRoot = path.resolve(process.cwd(), "uploads");
+  const relative = submission.filePath.replace(/^uploads[\\/]/, "");
+  const absolute = path.resolve(uploadsRoot, ...relative.split(/[\\/]/));
+
+  if (
+    absolute !== uploadsRoot &&
+    !absolute.startsWith(uploadsRoot + path.sep)
+  ) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const data = await readFile(absolute);
+  const safeName = submission.fileName.replace(/["\r\n]/g, "_");
 
   return new NextResponse(data, {
     headers: {
       "Content-Type": "application/octet-stream",
-      "Content-Disposition": `attachment; filename="${submission.fileName}"`,
+      "Content-Disposition": `attachment; filename="${safeName}"`,
+      "X-Content-Type-Options": "nosniff",
     },
   });
 }

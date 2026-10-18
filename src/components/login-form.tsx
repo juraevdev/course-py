@@ -15,7 +15,7 @@ export function LoginForm() {
         label="Email"
         name="email"
         type="email"
-        placeholder="jasur@kurs.uz"
+        placeholder="email@example.com"
         required
       />
       <Field

@@ -23,13 +23,12 @@ export default async function StudentHomePage() {
     upcoming,
   ] = await Promise.all([
     prisma.topic.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 4,
+      orderBy: { createdAt: "asc" },
       include: { views: { where: { userId: user.id } } },
     }),
     prisma.assignment.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 4,
+      orderBy: { createdAt: "asc" },
+      take: 8,
       include: {
         submissions: { where: { studentId: user.id } },
         topic: true,

@@ -98,7 +98,9 @@ export async function createAssignmentAction(
   const topic = await prisma.topic.findUnique({
     where: { id: parsed.data.topicId },
   });
-  if (!topic) return { error: "Mavzu topilmadi." };
+  if (!topic || topic.authorId !== teacher.id) {
+    return { error: "Mavzu topilmadi yoki sizniki emas." };
+  }
 
   const assignment = await prisma.assignment.create({
     data: {
@@ -287,6 +289,14 @@ export async function reviewSubmissionAction(
     return { error: "Izohni kiriting." };
   }
 
+  const existing = await prisma.submission.findUnique({
+    where: { id: parsed.data.submissionId },
+    include: { assignment: true },
+  });
+  if (!existing || existing.assignment.authorId !== teacher.id) {
+    return { error: "Bu topshiriq sizniki emas." };
+  }
+
   const submission = await prisma.submission.update({
     where: { id: parsed.data.submissionId },
     data: {
@@ -369,6 +379,14 @@ export async function answerTopicQuestionAction(
   const answer = String(formData.get("answer") || "").trim();
   if (!questionId || answer.length < 2) {
     return { error: "Javobni kiriting." };
+  }
+
+  const existing = await prisma.topicQuestion.findUnique({
+    where: { id: questionId },
+    include: { topic: true },
+  });
+  if (!existing || existing.topic.authorId !== teacher.id) {
+    return { error: "Bu savol sizning mavzuingizga tegishli emas." };
   }
 
   const question = await prisma.topicQuestion.update({
@@ -456,7 +474,7 @@ export async function createStudentAction(
 
   if (name.length < 2) return { error: "Ism juda qisqa." };
   if (!email.includes("@")) return { error: "Email noto‘g‘ri." };
-  if (password.length < 6) return { error: "Parol kamida 6 belgi." };
+  if (password.length < 8) return { error: "Parol kamida 8 belgi." };
 
   const exists = await prisma.user.findUnique({ where: { email } });
   if (exists) return { error: "Bu email allaqachon ro‘yxatda." };
@@ -484,8 +502,8 @@ export async function resetStudentPasswordAction(
 
   const studentId = String(formData.get("studentId") || "");
   const password = String(formData.get("password") || "");
-  if (!studentId || password.length < 6) {
-    return { error: "Yangi parol kamida 6 belgi." };
+  if (!studentId || password.length < 8) {
+    return { error: "Yangi parol kamida 8 belgi." };
   }
 
   const student = await prisma.user.findFirst({

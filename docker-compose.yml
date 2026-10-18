@@ -1,20 +1,71 @@
+networks:
+  kurs_internal:
+    driver: bridge
+    internal: false
+
 services:
+  # Faqat kerakli Docker API (containers). To‘liq docker.sock runnerga berilmaydi.
+  docker-proxy:
+    image: tecnativa/docker-socket-proxy:0.3.0
+    environment:
+      CONTAINERS: 1
+      POST: 1
+      IMAGES: 1
+      INFO: 1
+      VERSION: 1
+      NETWORKS: 0
+      VOLUMES: 0
+      EXEC: 0
+      BUILD: 0
+      COMMIT: 0
+      SWARM: 0
+      SERVICES: 0
+      TASKS: 0
+      SECRETS: 0
+      CONFIGS: 0
+      NODES: 0
+      PLUGINS: 0
+      SYSTEM: 0
+      AUTH: 0
+      EVENTS: 0
+      PING: 1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - kurs_internal
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
   runner:
     build:
       context: ./backend
       dockerfile: Dockerfile
     image: kurs-runner:latest
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8015:8000"
     environment:
-      DJANGO_DEBUG: "1"
-      DJANGO_ALLOWED_HOSTS: "*"
-      CORS_ALLOWED_ORIGINS: "http://localhost:3000,http://127.0.0.1:3000"
+      DJANGO_DEBUG: "0"
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?set DJANGO_SECRET_KEY}
+      DJANGO_ALLOWED_HOSTS: "127.0.0.1,localhost"
+      RUNNER_API_KEY: ${RUNNER_API_KEY:?set RUNNER_API_KEY}
+      CORS_ALLOWED_ORIGINS: "https://python.buildup.uz,http://127.0.0.1:3015"
       RUNNER_USE_DOCKER: "1"
+      RUNNER_ALLOW_LOCAL: "0"
       RUNNER_DOCKER_IMAGE: kurs-sandbox:latest
       RUNNER_TIMEOUT_SECONDS: "5"
       RUNNER_DOCKER_MEMORY: "128m"
       RUNNER_DOCKER_CPUS: "0.5"
+      # Host Docker daemon (proxy orqali), to‘g‘ridan-to‘g‘ri sock yo‘q
+      DOCKER_HOST: tcp://docker-proxy:2375
+      RUNNER_CODE_DIR: /tmp/kurs-runs
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      # Host va sandbox bir xil pathni ko‘radi
+      - /tmp/kurs-runs:/tmp/kurs-runs
+    depends_on:
+      - docker-proxy
+    networks:
+      - kurs_internal
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true

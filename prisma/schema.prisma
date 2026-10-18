@@ -143,3 +143,9 @@ model NotificationPreference {
   telegramEnabled Boolean @default(false)
   telegramChatId  String?
 }
+
+model RateLimitBucket {
+  key     String   @id
+  count   Int      @default(0)
+  resetAt DateTime
+}

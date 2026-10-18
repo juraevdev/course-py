@@ -9,6 +9,15 @@ from .sandbox import _docker_available, run_python
 from .serializers import RunCodeSerializer, RunResultSerializer
 
 
+def _authorized(request: Request) -> bool:
+    """Ichki kalit majburiy (production). DEBUG da kalit bo‘lmasa ochiq."""
+    expected = settings.RUNNER_API_KEY
+    if not expected:
+        return bool(settings.DEBUG)
+    provided = request.headers.get("X-Runner-Key", "")
+    return provided == expected
+
+
 class HealthView(APIView):
     authentication_classes = []
     permission_classes = []
@@ -20,6 +29,7 @@ class HealthView(APIView):
                 "status": "ok",
                 "service": "kurs-runner",
                 "languages": ["python"],
+                "auth_required": bool(settings.RUNNER_API_KEY) or not settings.DEBUG,
                 "docker": {
                     "enabled": settings.RUNNER_USE_DOCKER,
                     "available": docker_ok,
@@ -42,12 +52,19 @@ class RunCodeView(APIView):
       "stdin": "",
       "language": "python"
     }
+    Header: X-Runner-Key: <RUNNER_API_KEY>
     """
 
     authentication_classes = []
     permission_classes = []
 
     def post(self, request: Request) -> Response:
+        if not _authorized(request):
+            return Response(
+                {"detail": "Unauthorized."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
         serializer = RunCodeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 

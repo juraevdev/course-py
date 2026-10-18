@@ -8,7 +8,10 @@ SECRET_KEY = os.environ.get(
     "django-insecure-kurs-dev-only-change-in-production",
 )
 
-DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
+DEBUG = os.environ.get("DJANGO_DEBUG", "0") == "1"
+
+# Next.js → runner ichki kaliti (bo‘sh bo‘lsa faqat DEBUG=1 da ochiq)
+RUNNER_API_KEY = os.environ.get("RUNNER_API_KEY", "").strip()
 
 ALLOWED_HOSTS = [
     h.strip()
@@ -107,8 +110,12 @@ RUNNER_MAX_CODE_CHARS = int(os.environ.get("RUNNER_MAX_CODE_CHARS", "20000"))
 RUNNER_MAX_OUTPUT_CHARS = int(os.environ.get("RUNNER_MAX_OUTPUT_CHARS", "50000"))
 RUNNER_PYTHON = os.environ.get("RUNNER_PYTHON", "")  # empty = sys.executable
 
-# Docker sandbox (serverda RUNNER_USE_DOCKER=1)
+# Docker sandbox (serverda RUNNER_USE_DOCKER=1). Productionda local fallback yo‘q.
 RUNNER_USE_DOCKER = os.environ.get("RUNNER_USE_DOCKER", "0") == "1"
+RUNNER_ALLOW_LOCAL = os.environ.get("RUNNER_ALLOW_LOCAL", "0") == "1"
 RUNNER_DOCKER_IMAGE = os.environ.get("RUNNER_DOCKER_IMAGE", "kurs-sandbox:latest")
 RUNNER_DOCKER_MEMORY = os.environ.get("RUNNER_DOCKER_MEMORY", "128m")
 RUNNER_DOCKER_CPUS = os.environ.get("RUNNER_DOCKER_CPUS", "0.5")
+# Host + runner bir xil path (docker-compose bind: /tmp/kurs-runs)
+RUNNER_CODE_DIR = os.environ.get("RUNNER_CODE_DIR", "")
+

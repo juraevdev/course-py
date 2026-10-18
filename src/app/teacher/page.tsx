@@ -28,8 +28,8 @@ export default async function TeacherHomePage() {
 
   const latestTopics = await prisma.topic.findMany({
     where: { authorId: user.id },
-    orderBy: { createdAt: "desc" },
-    take: 4,
+    orderBy: { createdAt: "asc" },
+    include: { _count: { select: { assignments: true } } },
   });
 
   return (
@@ -101,16 +101,28 @@ export default async function TeacherHomePage() {
 
       <div className="grid gap-8 lg:grid-cols-2">
         <div>
-          <h2 className="mb-4 text-lg font-medium text-[var(--ink)]">
-            So‘nggi mavzular
-          </h2>
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <h2 className="text-lg font-medium text-[var(--ink)]">
+              Mavzular
+            </h2>
+            <span className="font-[family-name:var(--font-mono)] text-xs text-[var(--muted)]">
+              {latestTopics.length} ta
+            </span>
+          </div>
           {latestTopics.length ? (
             <div className="space-y-3">
               {latestTopics.map((topic, index) => (
                 <Link key={topic.id} href={`/teacher/topics/${topic.id}`}>
                   <Panel index={index} className="mb-3 !p-5 transition hover:shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
-                    <h3 className="font-medium text-[var(--ink)]">{topic.title}</h3>
-                    <p className="mt-1 text-sm text-[var(--muted)]">{topic.summary}</p>
+                    <div className="flex items-start justify-between gap-3">
+                      <h3 className="font-medium text-[var(--ink)]">{topic.title}</h3>
+                      <StatusTag tone="neutral">
+                        {topic._count.assignments} topshiriq
+                      </StatusTag>
+                    </div>
+                    <p className="mt-1 text-sm text-[var(--muted)] line-clamp-2">
+                      {topic.summary}
+                    </p>
                     <p className="mt-3 font-[family-name:var(--font-mono)] text-xs text-[var(--muted)]">
                       {formatDate(topic.createdAt)}
                     </p>

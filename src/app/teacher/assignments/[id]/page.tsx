@@ -29,7 +29,7 @@ export default async function TeacherAssignmentPage({
       <PageIntro
         eyebrow="Topshiriq"
         title={assignment.title}
-        description={assignment.description}
+        description={`Mavzu: ${assignment.topic.title}`}
       />
 
       <Panel className="mb-8">
@@ -43,6 +43,9 @@ export default async function TeacherAssignmentPage({
           {assignment.dueAt ? (
             <span>Muddat: {formatDate(assignment.dueAt)}</span>
           ) : null}
+        </div>
+        <div className="prose-kurs mt-5 border-t border-[var(--line)] pt-5 text-sm text-[var(--body)]">
+          {assignment.description}
         </div>
       </Panel>
 

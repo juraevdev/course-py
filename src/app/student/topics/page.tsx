@@ -28,7 +28,7 @@ export default async function StudentTopicsPage({
           ],
         }
       : undefined,
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: "asc" },
     include: { views: { where: { userId: user.id } } },
   });
 
