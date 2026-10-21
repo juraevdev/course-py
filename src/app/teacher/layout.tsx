@@ -27,6 +27,7 @@ export default async function TeacherLayout({
             { href: "/teacher/leaderboard", label: "Reyting" },
             { href: "/teacher/students", label: "O‘quvchilar" },
             { href: "/teacher/notifications", label: "Bildirishnomalar" },
+            { href: "/teacher/settings", label: "Sozlamalar" },
           ]}
         />
       }

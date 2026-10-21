@@ -186,11 +186,13 @@ model StudentNote {
 }
 
 model NotificationPreference {
-  userId          String  @id
-  user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  emailEnabled    Boolean @default(false)
-  telegramEnabled Boolean @default(false)
-  telegramChatId  String?
+  userId                String    @id
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailEnabled          Boolean   @default(false)
+  telegramEnabled       Boolean   @default(false)
+  telegramChatId        String?
+  telegramLinkToken     String?   @unique
+  telegramLinkExpiresAt DateTime?
 }
 
 model RateLimitBucket {

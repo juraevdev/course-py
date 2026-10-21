@@ -1,4 +1,5 @@
 import { prisma } from "./prisma";
+import { appPublicUrl, sendTelegramMessage, telegramConfigured } from "./telegram";
 
 type NotifyInput = {
   userId: string;
@@ -7,7 +8,7 @@ type NotifyInput = {
   href?: string;
 };
 
-/** Faqat in-app bildirishnoma (email yo‘q). */
+/** In-app + (yoqilgan bo‘lsa) Telegram. */
 export async function notifyUser(input: NotifyInput) {
   await prisma.notification.create({
     data: {
@@ -17,6 +18,23 @@ export async function notifyUser(input: NotifyInput) {
       href: input.href,
     },
   });
+
+  if (!telegramConfigured()) return;
+
+  const prefs = await prisma.notificationPreference.findUnique({
+    where: { userId: input.userId },
+  });
+
+  if (!prefs?.telegramEnabled || !prefs.telegramChatId) return;
+
+  const link = input.href ? `${appPublicUrl()}${input.href}` : "";
+  const text = [`${input.title}`, input.body, link].filter(Boolean).join("\n");
+
+  try {
+    await sendTelegramMessage(prefs.telegramChatId, text);
+  } catch {
+    // In-app saqlangan — Telegram xatosi asosiy oqimni to‘xtatmasin
+  }
 }
 
 export async function notifyMany(

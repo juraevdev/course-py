@@ -42,4 +42,4 @@ API: [http://127.0.0.1:8000/api/health/](http://127.0.0.1:8000/api/health/)
 - Ball + avto-test: CODE topshiriqda stdin/stdout testlari, qo‘lda baholash
 - Reyting: guruh ichida va umumiy ballashuv
 - O‘quvchi: progress, muddat, savol, eslatma, Kod/Javob, Python Run
-- Bildirishnoma: faqat sayt ichida (email yo‘q)
+- Bildirishnoma: sayt ichida + ixtiyoriy Telegram (Sozlamalar orqali bog‘lash)
