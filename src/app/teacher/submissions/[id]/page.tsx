@@ -91,6 +91,23 @@ export default async function TeacherSubmissionReviewPage({
         </div>
       </Panel>
 
+      <Panel className="mb-8">
+        <p className="text-xs uppercase tracking-[0.06em] text-[var(--muted)]">
+          Topshiriq sharti
+        </p>
+        <h2 className="mt-2 text-lg font-medium text-[var(--ink)]">
+          {submission.assignment.title}
+        </h2>
+        <div className="prose-kurs mt-4 whitespace-pre-wrap text-sm leading-relaxed text-[var(--body)]">
+          {submission.assignment.description}
+        </div>
+        {submission.assignment.dueAt ? (
+          <p className="mt-4 font-[family-name:var(--font-mono)] text-xs text-[var(--muted)]">
+            Muddat: {formatDate(submission.assignment.dueAt)}
+          </p>
+        ) : null}
+      </Panel>
+
       <div className="grid gap-8 lg:grid-cols-5">
         <Panel className="lg:col-span-3">
           <h2 className="mb-4 text-lg font-medium">Javob</h2>
