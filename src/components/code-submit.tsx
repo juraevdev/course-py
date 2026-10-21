@@ -42,10 +42,15 @@ export function CodeSubmitForm({
   defaultKind?: string | null;
   fileName?: string | null;
 }) {
-  const [mode, setMode] = useState<Mode>(() =>
-    detectMode(defaultValue, defaultKind),
+  const initialMode = detectMode(defaultValue, defaultKind);
+  const [mode, setMode] = useState<Mode>(initialMode);
+  // Javob va kod alohida — biridan ikkinchisiga o‘tishda aralashmasin
+  const [textContent, setTextContent] = useState(
+    initialMode === "TEXT" ? defaultValue || "" : "",
   );
-  const [content, setContent] = useState(defaultValue || "");
+  const [codeContent, setCodeContent] = useState(
+    initialMode === "CODE" ? defaultValue || "" : "",
+  );
   const [stdin, setStdin] = useState("");
   const [copied, setCopied] = useState(false);
   const [running, setRunning] = useState(false);
@@ -56,14 +61,16 @@ export function CodeSubmitForm({
     initial,
   );
 
+  const content = mode === "CODE" ? codeContent : textContent;
+
   const accept = useMemo(
     () => (mode === "CODE" ? ".py,.txt" : ".txt,.md,.pdf"),
     [mode],
   );
 
   async function copyCode() {
-    if (!content) return;
-    await navigator.clipboard.writeText(content);
+    if (!codeContent) return;
+    await navigator.clipboard.writeText(codeContent);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1500);
   }
@@ -75,7 +82,7 @@ export function CodeSubmitForm({
       const res = await fetch("/api/run-python", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: content, stdin }),
+        body: JSON.stringify({ code: codeContent, stdin }),
       });
       const data = (await res.json()) as RunResult & { error?: string };
       setRunResult({
@@ -135,8 +142,8 @@ export function CodeSubmitForm({
             Yozma javob
           </span>
           <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
+            value={textContent}
+            onChange={(e) => setTextContent(e.target.value)}
             rows={8}
             required
             placeholder="Javobingizni shu yerga yozing..."
@@ -169,7 +176,7 @@ export function CodeSubmitForm({
                 type="button"
                 variant="secondary"
                 onClick={runPython}
-                disabled={running || !content.trim()}
+                disabled={running || !codeContent.trim()}
               >
                 <Play weight="fill" size={14} />
                 {running ? "Ishlamoqda..." : "Run"}
@@ -177,7 +184,11 @@ export function CodeSubmitForm({
             </div>
           </div>
 
-          <PythonEditor name="codePreview" value={content} onChange={setContent} />
+          <PythonEditor
+            name="codePreview"
+            value={codeContent}
+            onChange={setCodeContent}
+          />
 
           <label className="block">
             <span className="text-xs uppercase tracking-[0.06em] text-[var(--muted)]">
