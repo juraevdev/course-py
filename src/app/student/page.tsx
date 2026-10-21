@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { EmptyState, PageIntro, Panel, StatusTag } from "@/components/ui";
 import { requireUser } from "@/lib/auth";
+import {
+  studentAssignmentWhere,
+  studentContentWhere,
+} from "@/lib/cohorts";
 import { formatDate } from "@/lib/format";
+import { getLeaderboard } from "@/lib/leaderboard";
 import { prisma } from "@/lib/prisma";
 import { Role } from "@prisma/client";
 
@@ -11,6 +16,14 @@ export default async function StudentHomePage() {
 
   const now = new Date();
   const inThreeDays = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+  const topicWhere = await studentContentWhere(user.id);
+  const assignmentWhere = await studentAssignmentWhere(user.id);
+
+  const membership = await prisma.cohortMember.findFirst({
+    where: { studentId: user.id },
+    include: { cohort: true },
+    orderBy: { joinedAt: "asc" },
+  });
 
   const [
     topics,
@@ -21,12 +34,15 @@ export default async function StudentHomePage() {
     assignmentTotal,
     submittedCount,
     upcoming,
+    scoreAgg,
   ] = await Promise.all([
     prisma.topic.findMany({
+      where: topicWhere,
       orderBy: { createdAt: "asc" },
       include: { views: { where: { userId: user.id } } },
     }),
     prisma.assignment.findMany({
+      where: assignmentWhere,
       orderBy: { createdAt: "asc" },
       take: 8,
       include: {
@@ -35,19 +51,37 @@ export default async function StudentHomePage() {
       },
     }),
     prisma.notification.count({ where: { userId: user.id, read: false } }),
-    prisma.topic.count(),
-    prisma.topicView.count({ where: { userId: user.id } }),
-    prisma.assignment.count(),
-    prisma.submission.count({ where: { studentId: user.id } }),
+    prisma.topic.count({ where: topicWhere }),
+    prisma.topicView.count({
+      where: { userId: user.id, topic: topicWhere },
+    }),
+    prisma.assignment.count({ where: assignmentWhere }),
+    prisma.submission.count({
+      where: { studentId: user.id, assignment: assignmentWhere },
+    }),
     prisma.assignment.findMany({
       where: {
-        dueAt: { gte: now, lte: inThreeDays },
-        NOT: { submissions: { some: { studentId: user.id } } },
+        AND: [
+          assignmentWhere,
+          {
+            dueAt: { gte: now, lte: inThreeDays },
+            NOT: { submissions: { some: { studentId: user.id } } },
+          },
+        ],
       },
       orderBy: { dueAt: "asc" },
       include: { topic: true },
     }),
+    prisma.submission.aggregate({
+      where: { studentId: user.id, score: { not: null } },
+      _sum: { score: true },
+    }),
   ]);
+
+  const board = await getLeaderboard({
+    cohortId: membership?.cohortId ?? null,
+  });
+  const myRank = board.find((r) => r.studentId === user.id);
 
   const topicPct = topicTotal ? Math.round((viewedCount / topicTotal) * 100) : 0;
   const assignPct = assignmentTotal
@@ -60,13 +94,21 @@ export default async function StudentHomePage() {
         eyebrow="O‘quvchi profili"
         title={user.name}
         description="Offline dasturlash darsidagi mavzular, kod resurslari va topshiriqlar shu yerda."
+        action={
+          <Link
+            href="/student/leaderboard"
+            className="rounded-[6px] bg-[var(--btn-bg)] px-4 py-2.5 text-sm font-medium text-[var(--btn-fg)]"
+          >
+            Reyting
+          </Link>
+        }
       />
 
-      <div className="mb-8 grid gap-4 md:grid-cols-2">
+      <div className="mb-8 grid gap-4 md:grid-cols-3">
         <Panel className="!p-5">
           <div className="flex items-center justify-between gap-3">
             <p className="text-xs uppercase tracking-[0.06em] text-[var(--muted)]">
-              Mavzular progressi
+              Mavzular
             </p>
             <span className="font-[family-name:var(--font-mono)] text-xs text-[var(--muted)]">
               {viewedCount}/{topicTotal}
@@ -82,7 +124,7 @@ export default async function StudentHomePage() {
         <Panel className="!p-5" index={1}>
           <div className="flex items-center justify-between gap-3">
             <p className="text-xs uppercase tracking-[0.06em] text-[var(--muted)]">
-              Topshiriqlar progressi
+              Topshiriqlar
             </p>
             <span className="font-[family-name:var(--font-mono)] text-xs text-[var(--muted)]">
               {submittedCount}/{assignmentTotal}
@@ -94,6 +136,18 @@ export default async function StudentHomePage() {
           <div className="progress-bar mt-4">
             <span style={{ width: `${assignPct}%` }} />
           </div>
+        </Panel>
+        <Panel className="!p-5" index={2}>
+          <p className="text-xs uppercase tracking-[0.06em] text-[var(--muted)]">
+            Bellashuv
+          </p>
+          <p className="mt-2 font-[family-name:var(--font-display)] text-3xl tracking-[-0.03em]">
+            {myRank ? `#${myRank.rank}` : "—"}
+          </p>
+          <p className="mt-2 text-sm text-[var(--muted)]">
+            {scoreAgg._sum.score ?? 0} ball
+            {membership ? ` · ${membership.cohort.name}` : ""}
+          </p>
         </Panel>
       </div>
 
@@ -204,12 +258,22 @@ export default async function StudentHomePage() {
                             {item.topic.title}
                           </p>
                         </div>
-                        <StatusTag tone={done ? "green" : "yellow"}>
-                          {done
-                            ? done.status === "REVIEWED"
-                              ? "Ko‘rilgan"
-                              : "Yuborilgan"
-                            : "Kutilmoqda"}
+                        <StatusTag
+                          tone={
+                            done?.score != null
+                              ? "green"
+                              : done
+                                ? "blue"
+                                : "yellow"
+                          }
+                        >
+                          {done?.score != null
+                            ? `${done.score}/${item.maxScore}`
+                            : done
+                              ? done.status === "REVIEWED"
+                                ? "Ko‘rilgan"
+                                : "Yuborilgan"
+                              : "Kutilmoqda"}
                         </StatusTag>
                       </div>
                       {item.dueAt ? (

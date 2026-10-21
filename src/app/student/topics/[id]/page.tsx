@@ -5,6 +5,10 @@ import { DownloadTopicButton } from "@/components/download-topic";
 import { MarkTopicViewed } from "@/components/mark-viewed";
 import { PageIntro, Panel, StatusTag } from "@/components/ui";
 import { requireUser } from "@/lib/auth";
+import {
+  studentAssignmentWhere,
+  studentCanAccessTopic,
+} from "@/lib/cohorts";
 import { formatDate } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { Role } from "@prisma/client";
@@ -18,10 +22,14 @@ export default async function StudentTopicPage({
   if (!user) return null;
 
   const { id } = await params;
+  const assignmentFilter = await studentAssignmentWhere(user.id);
   const topic = await prisma.topic.findUnique({
     where: { id },
     include: {
-      assignments: { orderBy: { createdAt: "desc" } },
+      assignments: {
+        where: assignmentFilter,
+        orderBy: { createdAt: "desc" },
+      },
       questions: {
         where: { studentId: user.id },
         orderBy: { createdAt: "desc" },
@@ -35,6 +43,8 @@ export default async function StudentTopicPage({
   });
 
   if (!topic) notFound();
+  const allowed = await studentCanAccessTopic(user.id, topic);
+  if (!allowed) notFound();
 
   return (
     <>

@@ -20,6 +20,7 @@ export default async function StudentLayout({
             { href: "/student", label: "Bosh sahifa" },
             { href: "/student/topics", label: "Mavzular" },
             { href: "/student/assignments", label: "Topshiriqlar" },
+            { href: "/student/leaderboard", label: "Reyting" },
             { href: "/student/feedback", label: "Izohlar" },
             { href: "/student/notes", label: "Eslatmalar" },
             { href: "/student/notifications", label: "Bildirishnomalar" },

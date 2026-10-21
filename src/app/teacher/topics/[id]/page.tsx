@@ -2,14 +2,19 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AnswerQuestionForm } from "@/components/student-forms";
 import { PageIntro, Panel, StatusTag } from "@/components/ui";
+import { requireUser } from "@/lib/auth";
 import { formatDate } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { Role } from "@prisma/client";
 
 export default async function TeacherTopicPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const user = await requireUser(Role.TEACHER);
+  if (!user) return null;
+
   const { id } = await params;
   const topic = await prisma.topic.findUnique({
     where: { id },
@@ -22,7 +27,7 @@ export default async function TeacherTopicPage({
     },
   });
 
-  if (!topic) notFound();
+  if (!topic || topic.authorId !== user.id) notFound();
 
   return (
     <>
@@ -31,12 +36,20 @@ export default async function TeacherTopicPage({
         title={topic.title}
         description={topic.summary}
         action={
-          <Link
-            href={`/teacher/assignments/new?topicId=${topic.id}`}
-            className="rounded-[6px] bg-[var(--btn-bg)] px-4 py-2.5 text-sm font-medium text-[var(--btn-fg)]"
-          >
-            Topshiriq qo‘shish
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href={`/teacher/topics/${topic.id}/edit`}
+              className="rounded-[6px] border border-[var(--line)] bg-[var(--btn-secondary-bg)] px-4 py-2.5 text-sm font-medium text-[var(--btn-secondary-fg)]"
+            >
+              Tahrirlash
+            </Link>
+            <Link
+              href={`/teacher/assignments/new?topicId=${topic.id}`}
+              className="rounded-[6px] bg-[var(--btn-bg)] px-4 py-2.5 text-sm font-medium text-[var(--btn-fg)]"
+            >
+              Topshiriq qo‘shish
+            </Link>
+          </div>
         }
       />
 

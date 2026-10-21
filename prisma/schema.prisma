@@ -39,6 +39,31 @@ model User {
   answers       TopicQuestion[]         @relation("QuestionAnswerer")
   notes         StudentNote[]
   prefs         NotificationPreference?
+  cohorts       Cohort[]                @relation("CohortAuthor")
+  memberships   CohortMember[]
+}
+
+model Cohort {
+  id          String         @id @default(cuid())
+  name        String
+  description String?
+  authorId    String
+  author      User           @relation("CohortAuthor", fields: [authorId], references: [id])
+  createdAt   DateTime       @default(now())
+  members     CohortMember[]
+  topics      Topic[]
+  assignments Assignment[]
+}
+
+model CohortMember {
+  id        String   @id @default(cuid())
+  cohortId  String
+  cohort    Cohort   @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  studentId String
+  student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  joinedAt  DateTime @default(now())
+
+  @@unique([cohortId, studentId])
 }
 
 model Topic {
@@ -49,6 +74,8 @@ model Topic {
   resourceUrl String?
   authorId    String
   author      User            @relation("TopicAuthor", fields: [authorId], references: [id])
+  cohortId    String?
+  cohort      Cohort?         @relation(fields: [cohortId], references: [id], onDelete: SetNull)
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
   assignments Assignment[]
@@ -62,12 +89,29 @@ model Assignment {
   title       String
   description String
   dueAt       DateTime?
+  maxScore    Int              @default(100)
   topicId     String
   topic       Topic            @relation(fields: [topicId], references: [id], onDelete: Cascade)
   authorId    String
   author      User             @relation("AssignmentAuthor", fields: [authorId], references: [id])
+  cohortId    String?
+  cohort      Cohort?          @relation(fields: [cohortId], references: [id], onDelete: SetNull)
   createdAt   DateTime         @default(now())
   submissions Submission[]
+  tests       AssignmentTest[]
+}
+
+model AssignmentTest {
+  id             String     @id @default(cuid())
+  assignmentId   String
+  assignment     Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  name           String
+  stdin          String     @default("")
+  expectedStdout String
+  points         Int        @default(1)
+  sortOrder      Int        @default(0)
+  isHidden       Boolean    @default(true)
+  createdAt      DateTime   @default(now())
 }
 
 model Submission {
@@ -76,6 +120,11 @@ model Submission {
   kind         SubmissionKind   @default(TEXT)
   status       AssignmentStatus @default(SUBMITTED)
   feedback     String?
+  score        Int?
+  autoScore    Int?
+  testsPassed  Int?
+  testsTotal   Int?
+  testReport   String?
   fileName     String?
   filePath     String?
   assignmentId String

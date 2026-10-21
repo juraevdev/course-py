@@ -16,6 +16,7 @@ async function main() {
 
   await prisma.notification.deleteMany();
   await prisma.submission.deleteMany();
+  await prisma.assignmentTest.deleteMany();
   await prisma.topicQuestion.deleteMany();
   await prisma.studentNote.deleteMany();
   await prisma.topicView.deleteMany();
@@ -23,6 +24,8 @@ async function main() {
   await prisma.rateLimitBucket.deleteMany();
   await prisma.assignment.deleteMany();
   await prisma.topic.deleteMany();
+  await prisma.cohortMember.deleteMany();
+  await prisma.cohort.deleteMany();
   await prisma.user.deleteMany();
 
   const passwordHash = await bcrypt.hash(password, 12);

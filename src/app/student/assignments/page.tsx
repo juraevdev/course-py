@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { SearchBox } from "@/components/search";
 import { EmptyState, PageIntro, Panel, StatusTag } from "@/components/ui";
 import { requireUser } from "@/lib/auth";
+import { studentAssignmentWhere } from "@/lib/cohorts";
 import { formatDate } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { Role } from "@prisma/client";
@@ -17,17 +18,23 @@ export default async function StudentAssignmentsPage({
 
   const { q } = await searchParams;
   const query = q?.trim() || "";
+  const visible = await studentAssignmentWhere(user.id);
 
   const assignments = await prisma.assignment.findMany({
-    where: query
-      ? {
-          OR: [
-            { title: { contains: query } },
-            { description: { contains: query } },
-            { topic: { title: { contains: query } } },
-          ],
-        }
-      : undefined,
+    where: {
+      AND: [
+        visible,
+        query
+          ? {
+              OR: [
+                { title: { contains: query } },
+                { description: { contains: query } },
+                { topic: { title: { contains: query } } },
+              ],
+            }
+          : {},
+      ],
+    },
     orderBy: { createdAt: "desc" },
     include: {
       topic: true,
@@ -69,21 +76,27 @@ export default async function StudentAssignmentsPage({
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {soon ? <StatusTag tone="yellow">Muddat yaqin</StatusTag> : null}
-                      <StatusTag
-                        tone={
-                          submission
+                      {submission?.score != null ? (
+                        <StatusTag tone="green">
+                          {submission.score}/{item.maxScore}
+                        </StatusTag>
+                      ) : (
+                        <StatusTag
+                          tone={
+                            submission
+                              ? submission.status === "REVIEWED"
+                                ? "green"
+                                : "blue"
+                              : "yellow"
+                          }
+                        >
+                          {submission
                             ? submission.status === "REVIEWED"
-                              ? "green"
-                              : "blue"
-                            : "yellow"
-                        }
-                      >
-                        {submission
-                          ? submission.status === "REVIEWED"
-                            ? "Ko‘rilgan"
-                            : "Yuborilgan"
-                          : "Kutilmoqda"}
-                      </StatusTag>
+                              ? "Ko‘rilgan"
+                              : "Yuborilgan"
+                            : "Kutilmoqda"}
+                        </StatusTag>
+                      )}
                     </div>
                   </div>
                   {item.dueAt ? (

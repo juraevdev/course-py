@@ -105,9 +105,12 @@ export default async function TeacherHomePage() {
             <h2 className="text-lg font-medium text-[var(--ink)]">
               Mavzular
             </h2>
-            <span className="font-[family-name:var(--font-mono)] text-xs text-[var(--muted)]">
-              {latestTopics.length} ta
-            </span>
+            <Link
+              href="/teacher/topics"
+              className="font-[family-name:var(--font-mono)] text-xs text-[var(--muted)] underline-offset-4 hover:underline"
+            >
+              {latestTopics.length} ta · hammasi
+            </Link>
           </div>
           {latestTopics.length ? (
             <div className="space-y-3">

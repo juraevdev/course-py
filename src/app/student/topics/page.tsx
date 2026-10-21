@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { SearchBox } from "@/components/search";
 import { EmptyState, PageIntro, Panel, StatusTag } from "@/components/ui";
 import { requireUser } from "@/lib/auth";
+import { studentContentWhere } from "@/lib/cohorts";
 import { formatDate } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { Role } from "@prisma/client";
@@ -17,17 +18,23 @@ export default async function StudentTopicsPage({
 
   const { q } = await searchParams;
   const query = q?.trim() || "";
+  const visible = await studentContentWhere(user.id);
 
   const topics = await prisma.topic.findMany({
-    where: query
-      ? {
-          OR: [
-            { title: { contains: query } },
-            { summary: { contains: query } },
-            { content: { contains: query } },
-          ],
-        }
-      : undefined,
+    where: {
+      AND: [
+        visible,
+        query
+          ? {
+              OR: [
+                { title: { contains: query } },
+                { summary: { contains: query } },
+                { content: { contains: query } },
+              ],
+            }
+          : {},
+      ],
+    },
     orderBy: { createdAt: "asc" },
     include: { views: { where: { userId: user.id } } },
   });

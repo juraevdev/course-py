@@ -18,9 +18,11 @@ export default async function TeacherLayout({
           name={user.name}
           links={[
             { href: "/teacher", label: "Bosh sahifa" },
+            { href: "/teacher/topics", label: "Mavzular" },
+            { href: "/teacher/assignments", label: "Topshiriqlar" },
+            { href: "/teacher/cohorts", label: "Guruhlar" },
+            { href: "/teacher/leaderboard", label: "Reyting" },
             { href: "/teacher/students", label: "O‘quvchilar" },
-            { href: "/teacher/topics/new", label: "Mavzu" },
-            { href: "/teacher/assignments/new", label: "Topshiriq" },
             { href: "/teacher/notifications", label: "Bildirishnomalar" },
           ]}
         />

@@ -10,7 +10,11 @@ import { Button, Field } from "./ui";
 
 const initial: ActionState = {};
 
-export function CreateStudentForm() {
+export function CreateStudentForm({
+  cohorts = [],
+}: {
+  cohorts?: { id: string; name: string }[];
+}) {
   const [state, action, pending] = useActionState(createStudentAction, initial);
 
   return (
@@ -28,8 +32,22 @@ export function CreateStudentForm() {
         name="password"
         type="text"
         required
-        placeholder="kamida 6 belgi"
+        placeholder="kamida 8 belgi"
       />
+      <label className="block">
+        <span className="text-sm font-medium text-[var(--ink)]">Guruh</span>
+        <select
+          name="cohortId"
+          className="mt-2 w-full rounded-[6px] border border-[var(--line)] bg-[var(--surface)] px-3.5 py-2.5 text-sm outline-none"
+        >
+          <option value="">Keyinroq biriktirish</option>
+          {cohorts.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+      </label>
       {state.error ? (
         <p className="rounded-[6px] bg-[#FDEBEC] px-3 py-2 text-sm text-[#9F2F2D]">
           {state.error}
