@@ -21,6 +21,8 @@ export default async function StudentLayout({
             { href: "/student/topics", label: "Mavzular" },
             { href: "/student/assignments", label: "Topshiriqlar" },
             { href: "/student/leaderboard", label: "Reyting" },
+          ]}
+          moreLinks={[
             { href: "/student/feedback", label: "Izohlar" },
             { href: "/student/notes", label: "Eslatmalar" },
             { href: "/student/notifications", label: "Bildirishnomalar" },

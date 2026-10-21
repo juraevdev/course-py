@@ -2,25 +2,39 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { List, SignOut, X } from "@phosphor-icons/react";
+import { CaretDown, List, SignOut, X } from "@phosphor-icons/react";
 import { logoutAction } from "@/lib/auth-actions";
 import { ThemeBoot } from "./theme-script";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui";
 
+type NavLink = { href: string; label: string };
+
+function isActive(pathname: string, href: string) {
+  if (pathname === href) return true;
+  if (href === "/teacher" || href === "/student") return false;
+  return pathname.startsWith(href);
+}
+
 export function AppNav({
   links,
+  moreLinks = [],
   name,
 }: {
-  links: { href: string; label: string }[];
+  links: NavLink[];
+  moreLinks?: NavLink[];
   name: string;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const panelId = useId();
+  const moreRef = useRef<HTMLDivElement>(null);
+  const allLinks = [...links, ...moreLinks];
+  const moreActive = moreLinks.some((link) => isActive(pathname, link.href));
 
   useEffect(() => {
     setMounted(true);
@@ -28,6 +42,7 @@ export function AppNav({
 
   useEffect(() => {
     setOpen(false);
+    setMoreOpen(false);
   }, [pathname]);
 
   useEffect(() => {
@@ -47,9 +62,28 @@ export function AppNav({
     };
   }, [open]);
 
+  useEffect(() => {
+    if (!moreOpen) return;
+
+    const onPointer = (event: MouseEvent) => {
+      if (!moreRef.current?.contains(event.target as Node)) {
+        setMoreOpen(false);
+      }
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMoreOpen(false);
+    };
+
+    document.addEventListener("mousedown", onPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onPointer);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [moreOpen]);
+
   function linkClass(href: string, mobile = false) {
-    const active =
-      pathname === href || (href !== "/teacher" && href !== "/student" && pathname.startsWith(href));
+    const active = isActive(pathname, href);
     if (mobile) {
       return `block rounded-[6px] px-3 py-3 text-base transition ${
         active
@@ -73,6 +107,46 @@ export function AppNav({
             {link.label}
           </Link>
         ))}
+        {moreLinks.length ? (
+          <div className="relative" ref={moreRef}>
+            <button
+              type="button"
+              className={`inline-flex items-center gap-1 rounded-[6px] px-3 py-2 text-sm transition ${
+                moreActive || moreOpen
+                  ? "bg-[var(--canvas)] font-medium text-[var(--ink)]"
+                  : "text-[var(--muted)] hover:bg-[var(--canvas)] hover:text-[var(--ink)]"
+              }`}
+              aria-expanded={moreOpen}
+              aria-haspopup="menu"
+              onClick={() => setMoreOpen((value) => !value)}
+            >
+              Yana
+              <CaretDown weight="bold" size={14} />
+            </button>
+            {moreOpen ? (
+              <div
+                role="menu"
+                className="absolute right-0 top-full z-30 mt-1 min-w-[11rem] rounded-[8px] border border-[var(--line)] bg-[var(--surface)] py-1 shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
+              >
+                {moreLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    role="menuitem"
+                    className={`block px-3 py-2.5 text-sm transition hover:bg-[var(--canvas)] ${
+                      isActive(pathname, link.href)
+                        ? "font-medium text-[var(--ink)]"
+                        : "text-[var(--body)]"
+                    }`}
+                    onClick={() => setMoreOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </nav>
 
       <div className="flex items-center gap-1 sm:gap-2">
@@ -131,7 +205,7 @@ export function AppNav({
                   </button>
                 </div>
                 <nav className="flex-1 overflow-y-auto px-3 py-3" aria-label="Mobil">
-                  {links.map((link) => (
+                  {allLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}

@@ -17,10 +17,12 @@ export default async function TeacherLayout({
         <AppNav
           name={user.name}
           links={[
-            { href: "/teacher", label: "Bosh sahifa" },
-            { href: "/teacher/submissions", label: "Javoblar" },
+            { href: "/teacher", label: "Javoblar" },
             { href: "/teacher/topics", label: "Mavzular" },
             { href: "/teacher/assignments", label: "Topshiriqlar" },
+          ]}
+          moreLinks={[
+            { href: "/teacher/submissions", label: "Barcha javoblar" },
             { href: "/teacher/cohorts", label: "Guruhlar" },
             { href: "/teacher/leaderboard", label: "Reyting" },
             { href: "/teacher/students", label: "O‘quvchilar" },
