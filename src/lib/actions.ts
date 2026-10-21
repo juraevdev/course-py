@@ -529,10 +529,13 @@ export async function reviewSubmissionAction(
   });
 
   revalidatePath(`/teacher/assignments/${submission.assignmentId}`);
+  revalidatePath(`/teacher/submissions`);
+  revalidatePath(`/teacher/submissions/${submission.id}`);
+  revalidatePath("/teacher");
   revalidatePath(`/student/assignments/${submission.assignmentId}`);
   revalidatePath("/student/leaderboard");
   revalidatePath("/teacher/leaderboard");
-  return { success: "Ball va izoh saqlandi." };
+  return { success: "Ball va izoh saqlandi. Keyingisiga o‘ting." };
 }
 
 export async function markTopicViewedAction(topicId: string) {
