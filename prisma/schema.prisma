@@ -89,7 +89,7 @@ model Assignment {
   title       String
   description String
   dueAt       DateTime?
-  maxScore    Int              @default(100)
+  maxScore    Int              @default(5)
   topicId     String
   topic       Topic            @relation(fields: [topicId], references: [id], onDelete: Cascade)
   authorId    String

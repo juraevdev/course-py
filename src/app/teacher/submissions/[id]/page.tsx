@@ -143,8 +143,8 @@ export default async function TeacherSubmissionReviewPage({
         <Panel className="lg:col-span-2">
           <h2 className="mb-4 text-lg font-medium">Baholash</h2>
           <p className="mb-4 text-sm text-[var(--muted)]">
-            Maksimal: {submission.assignment.maxScore} ball. Saqlagach
-            «Keyingisi» chiqadi.
+            Ball: −{submission.assignment.maxScore}…{submission.assignment.maxScore}.
+            Saqlagach «Keyingisi» chiqadi.
           </p>
           <ReviewQueueForm
             submissionId={submission.id}

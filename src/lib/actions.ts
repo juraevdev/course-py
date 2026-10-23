@@ -106,7 +106,7 @@ export async function createAssignmentAction(
     topicId: formData.get("topicId"),
     dueAt: formData.get("dueAt") || undefined,
     cohortId: formData.get("cohortId") || undefined,
-    maxScore: formData.get("maxScore") || "100",
+    maxScore: formData.get("maxScore") || "5",
   });
 
   if (!parsed.success) {
@@ -132,7 +132,7 @@ export async function createAssignmentAction(
       topicId: topic.id,
       authorId: teacher.id,
       cohortId,
-      maxScore: parsed.data.maxScore ?? 100,
+      maxScore: parsed.data.maxScore ?? 5,
       dueAt: parsed.data.dueAt ? new Date(parsed.data.dueAt) : null,
     },
   });
@@ -238,7 +238,7 @@ export async function updateAssignmentAction(
     topicId: formData.get("topicId"),
     dueAt: formData.get("dueAt") || undefined,
     cohortId: formData.get("cohortId") || undefined,
-    maxScore: formData.get("maxScore") || "100",
+    maxScore: formData.get("maxScore") || "5",
   });
 
   if (!parsed.success) {
@@ -477,7 +477,7 @@ export async function markAllNotificationsReadAction() {
 const feedbackSchema = z.object({
   submissionId: z.string().min(1),
   feedback: z.string().min(3),
-  score: z.coerce.number().int().min(0).max(1000),
+  score: z.coerce.number().int(),
 });
 
 export async function reviewSubmissionAction(
@@ -505,9 +505,11 @@ export async function reviewSubmissionAction(
     return { error: "Bu topshiriq sizniki emas." };
   }
 
-  if (parsed.data.score > existing.assignment.maxScore) {
+  const max = existing.assignment.maxScore;
+  const min = -max;
+  if (parsed.data.score > max || parsed.data.score < min) {
     return {
-      error: `Ball ${existing.assignment.maxScore} dan oshmasligi kerak.`,
+      error: `Ball ${min} dan ${max} gacha bo‘lishi kerak.`,
     };
   }
 

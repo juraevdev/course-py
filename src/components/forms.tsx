@@ -185,7 +185,7 @@ export function CreateAssignmentForm({
           name="maxScore"
           type="number"
           required
-          defaultValue={String(defaults?.maxScore ?? 100)}
+          defaultValue={String(defaults?.maxScore ?? 5)}
         />
         <Field
           label="Muddat (ixtiyoriy)"
@@ -306,7 +306,7 @@ export function ReviewForm({
     <form action={action} className="space-y-4">
       <input type="hidden" name="submissionId" value={submissionId} />
       <Field
-        label={`Ball (0–${maxScore})`}
+        label={`Ball (−${maxScore}–${maxScore})`}
         name="score"
         type="number"
         required
