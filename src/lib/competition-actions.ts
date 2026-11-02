@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { Role } from "@prisma/client";
+import { MatchMode, Role } from "@prisma/client";
 import { requireUser } from "./auth";
 import { prisma } from "./prisma";
 
@@ -141,9 +141,43 @@ const testSchema = z.object({
   name: z.string().min(2),
   stdin: z.string().optional(),
   expectedStdout: z.string().min(1),
+  expectedAlternatives: z.string().optional(),
+  matchMode: z
+    .enum([
+      "EXACT",
+      "FLEXIBLE",
+      "ANY_OF",
+      "PATTERN",
+      "CONTAINS",
+      "UNORDERED_LINES",
+    ])
+    .optional(),
+  codeMustMatch: z.string().optional(),
   points: z.coerce.number().int().min(1).max(1000),
   isHidden: z.enum(["true", "false"]).optional(),
 });
+
+function parseAlternativesField(raw: string | undefined): string {
+  const text = (raw || "").trim();
+  if (!text) return "[]";
+  if (text.startsWith("[")) {
+    try {
+      const parsed = JSON.parse(text);
+      if (Array.isArray(parsed)) {
+        return JSON.stringify(
+          parsed.filter((x): x is string => typeof x === "string"),
+        );
+      }
+    } catch {
+      /* fall through: line-based */
+    }
+  }
+  const lines = text
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
+  return JSON.stringify(lines);
+}
 
 export async function createAssignmentTestAction(
   _prev: ActionState,
@@ -157,6 +191,9 @@ export async function createAssignmentTestAction(
     name: formData.get("name"),
     stdin: formData.get("stdin") || "",
     expectedStdout: formData.get("expectedStdout"),
+    expectedAlternatives: String(formData.get("expectedAlternatives") || ""),
+    matchMode: String(formData.get("matchMode") || "FLEXIBLE"),
+    codeMustMatch: String(formData.get("codeMustMatch") || ""),
     points: formData.get("points") || "1",
     isHidden: formData.get("isHidden") === "false" ? "false" : "true",
   });
@@ -173,17 +210,31 @@ export async function createAssignmentTestAction(
     return { error: "Topshiriq topilmadi." };
   }
 
+  const mode = (parsed.data.matchMode || "FLEXIBLE") as keyof typeof MatchMode;
+
   await prisma.assignmentTest.create({
     data: {
       assignmentId: assignment.id,
       name: parsed.data.name,
       stdin: parsed.data.stdin || "",
       expectedStdout: parsed.data.expectedStdout,
+      expectedAlternatives: parseAlternativesField(
+        parsed.data.expectedAlternatives,
+      ),
+      matchMode: MatchMode[mode] ?? MatchMode.FLEXIBLE,
+      codeMustMatch: parsed.data.codeMustMatch?.trim() || null,
       points: parsed.data.points,
       sortOrder: assignment._count.tests,
       isHidden: parsed.data.isHidden !== "false",
     },
   });
+
+  if (assignment.answerKind === "TEXT") {
+    await prisma.assignment.update({
+      where: { id: assignment.id },
+      data: { answerKind: "CODE" },
+    });
+  }
 
   revalidatePath(`/teacher/assignments/${assignment.id}`);
   return { success: "Test qo‘shildi." };

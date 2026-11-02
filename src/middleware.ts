@@ -26,6 +26,15 @@ export function middleware(request: NextRequest) {
     ].join("; "),
   );
 
+  // HTML/RSC ni keshlamaslik — deploy'dan keyin eski Server Action ID qolmasin
+  const path = request.nextUrl.pathname;
+  if (!path.startsWith("/_next/static") && !path.startsWith("/api/")) {
+    response.headers.set(
+      "Cache-Control",
+      "private, no-cache, no-store, max-age=0, must-revalidate",
+    );
+  }
+
   if (request.nextUrl.protocol === "https:" || request.headers.get("x-forwarded-proto") === "https") {
     response.headers.set(
       "Strict-Transport-Security",

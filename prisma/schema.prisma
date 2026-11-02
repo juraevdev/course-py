@@ -23,6 +23,21 @@ enum SubmissionKind {
   CODE
 }
 
+enum AnswerKind {
+  TEXT
+  CODE
+  EITHER
+}
+
+enum MatchMode {
+  EXACT
+  FLEXIBLE
+  ANY_OF
+  PATTERN
+  CONTAINS
+  UNORDERED_LINES
+}
+
 model User {
   id            String                  @id @default(cuid())
   name          String
@@ -90,6 +105,7 @@ model Assignment {
   description String
   dueAt       DateTime?
   maxScore    Int              @default(5)
+  answerKind  AnswerKind       @default(TEXT)
   topicId     String
   topic       Topic            @relation(fields: [topicId], references: [id], onDelete: Cascade)
   authorId    String
@@ -102,16 +118,21 @@ model Assignment {
 }
 
 model AssignmentTest {
-  id             String     @id @default(cuid())
-  assignmentId   String
-  assignment     Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-  name           String
-  stdin          String     @default("")
-  expectedStdout String
-  points         Int        @default(1)
-  sortOrder      Int        @default(0)
-  isHidden       Boolean    @default(true)
-  createdAt      DateTime   @default(now())
+  id                   String     @id @default(cuid())
+  assignmentId         String
+  assignment           Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  name                 String
+  stdin                String     @default("")
+  expectedStdout       String
+  /// JSON massiv: ["variant1", "variant2"] — ANY_OF yoki FLEXIBLE qo‘shimcha variantlar
+  expectedAlternatives String     @default("[]")
+  matchMode            MatchMode  @default(FLEXIBLE)
+  /// O‘quvchi kodiga qo‘yiladigan regex (masalan izohlar soni)
+  codeMustMatch        String?
+  points               Int        @default(1)
+  sortOrder            Int        @default(0)
+  isHidden             Boolean    @default(true)
+  createdAt            DateTime   @default(now())
 }
 
 model Submission {

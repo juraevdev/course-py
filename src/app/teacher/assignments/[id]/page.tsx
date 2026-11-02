@@ -90,7 +90,7 @@ export default async function TeacherAssignmentPage({
                     <div>
                       <p className="font-medium text-[var(--ink)]">{test.name}</p>
                       <p className="mt-1 font-[family-name:var(--font-mono)] text-xs text-[var(--muted)]">
-                        {test.points} ball ·{" "}
+                        {test.points} ball · {test.matchMode} ·{" "}
                         {test.isHidden ? "yashirin" : "ochiq"}
                       </p>
                     </div>

@@ -136,6 +136,7 @@ export function CreateAssignmentForm({
     dueAt?: string;
     cohortId?: string | null;
     maxScore?: number;
+    answerKind?: "TEXT" | "CODE" | "EITHER";
   };
 }) {
   const editing = Boolean(assignmentId);
@@ -194,6 +195,20 @@ export function CreateAssignmentForm({
           defaultValue={defaults?.dueAt}
         />
       </div>
+      <label className="block">
+        <span className="text-sm font-medium text-[var(--ink)]">
+          Javob turi
+        </span>
+        <select
+          name="answerKind"
+          defaultValue={defaults?.answerKind ?? "TEXT"}
+          className="mt-2 w-full rounded-[6px] border border-[var(--line)] bg-[var(--surface)] px-3.5 py-2.5 text-sm text-[var(--ink)] outline-none"
+        >
+          <option value="TEXT">Matn</option>
+          <option value="CODE">Kod (Python)</option>
+          <option value="EITHER">Ikkalasi ham</option>
+        </select>
+      </label>
       <label className="block">
         <span className="text-sm font-medium text-[var(--ink)]">Guruh</span>
         <select

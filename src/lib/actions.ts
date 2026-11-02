@@ -3,7 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { AssignmentStatus, Role, SubmissionKind } from "@prisma/client";
+import {
+  AnswerKind,
+  AssignmentStatus,
+  Role,
+  SubmissionKind,
+} from "@prisma/client";
 import { gradeCodeAgainstTests } from "./autograde";
 import { hashPassword, requireUser } from "./auth";
 import {
@@ -91,7 +96,15 @@ const assignmentSchema = z.object({
   dueAt: z.string().optional(),
   cohortId: z.string().optional(),
   maxScore: z.coerce.number().int().min(1).max(1000).optional(),
+  answerKind: z.enum(["TEXT", "CODE", "EITHER"]).optional(),
 });
+
+function parseAnswerKind(raw: FormDataEntryValue | null): AnswerKind {
+  const v = String(raw || "TEXT");
+  if (v === "CODE") return AnswerKind.CODE;
+  if (v === "EITHER") return AnswerKind.EITHER;
+  return AnswerKind.TEXT;
+}
 
 export async function createAssignmentAction(
   _prev: ActionState,
@@ -107,6 +120,7 @@ export async function createAssignmentAction(
     dueAt: formData.get("dueAt") || undefined,
     cohortId: formData.get("cohortId") || undefined,
     maxScore: formData.get("maxScore") || "5",
+    answerKind: String(formData.get("answerKind") || "TEXT"),
   });
 
   if (!parsed.success) {
@@ -133,6 +147,7 @@ export async function createAssignmentAction(
       authorId: teacher.id,
       cohortId,
       maxScore: parsed.data.maxScore ?? 5,
+      answerKind: parseAnswerKind(formData.get("answerKind")),
       dueAt: parsed.data.dueAt ? new Date(parsed.data.dueAt) : null,
     },
   });
@@ -239,6 +254,7 @@ export async function updateAssignmentAction(
     dueAt: formData.get("dueAt") || undefined,
     cohortId: formData.get("cohortId") || undefined,
     maxScore: formData.get("maxScore") || "5",
+    answerKind: String(formData.get("answerKind") || "TEXT"),
   });
 
   if (!parsed.success) {
@@ -272,6 +288,7 @@ export async function updateAssignmentAction(
       topicId: topic.id,
       cohortId,
       maxScore: parsed.data.maxScore ?? existing.maxScore,
+      answerKind: parseAnswerKind(formData.get("answerKind")),
       dueAt: parsed.data.dueAt ? new Date(parsed.data.dueAt) : null,
     },
   });

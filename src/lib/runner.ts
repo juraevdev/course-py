@@ -58,6 +58,4 @@ export async function runPythonCode(
   }
 }
 
-export function normalizeStdout(value: string) {
-  return value.replace(/\r\n/g, "\n").replace(/\s+$/g, "").trimEnd();
-}
+export { normalizeFlexible as normalizeStdout } from "./grade-match";

@@ -185,12 +185,41 @@ export function CreateAssignmentTestForm({
         placeholder="Kirish (bo‘sh bo‘lishi mumkin)"
       />
       <Field
-        label="Kutilgan stdout"
+        label="Kutilgan stdout / pattern"
         name="expectedStdout"
         as="textarea"
         rows={3}
         required
-        placeholder="Chop etilishi kerak bo‘lgan natija"
+        placeholder="Asosiy kutilgan chiqish yoki regex (PATTERN)"
+      />
+      <Field
+        label="Qo‘shimcha variantlar (har qator = 1 variant)"
+        name="expectedAlternatives"
+        as="textarea"
+        rows={3}
+        placeholder={"Jami to‘lov: 78000\n78000"}
+      />
+      <label className="block">
+        <span className="text-sm font-medium text-[var(--ink)]">
+          Solishtirish usuli
+        </span>
+        <select
+          name="matchMode"
+          defaultValue="FLEXIBLE"
+          className="mt-2 w-full rounded-[6px] border border-[var(--line)] bg-[var(--surface)] px-3.5 py-2.5 text-sm outline-none"
+        >
+          <option value="FLEXIBLE">Flexible (apostrof/bo‘shliq/float)</option>
+          <option value="ANY_OF">Any of (bir nechta to‘g‘ri chiqish)</option>
+          <option value="CONTAINS">Contains (muhim qismlar borligi)</option>
+          <option value="PATTERN">Pattern (regex)</option>
+          <option value="UNORDERED_LINES">Unordered lines</option>
+          <option value="EXACT">Exact</option>
+        </select>
+      </label>
+      <Field
+        label="Kod sharti (regex, ixtiyoriy)"
+        name="codeMustMatch"
+        placeholder="masalan: input\\s*\\(  yoki  (?m)^\\s*#"
       />
       <Field label="Ball" name="points" type="number" defaultValue="1" required />
       <label className="flex items-center gap-2 text-sm text-[var(--body)]">

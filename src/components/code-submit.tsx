@@ -35,14 +35,16 @@ export function CodeSubmitForm({
   assignmentId,
   defaultValue,
   defaultKind,
+  lockKind,
   fileName,
 }: {
   assignmentId: string;
   defaultValue?: string;
   defaultKind?: string | null;
+  lockKind?: Mode | null;
   fileName?: string | null;
 }) {
-  const initialMode = detectMode(defaultValue, defaultKind);
+  const initialMode = lockKind || detectMode(defaultValue, defaultKind);
   const [mode, setMode] = useState<Mode>(initialMode);
   // Javob va kod alohida — biridan ikkinchisiga o‘tishda aralashmasin
   const [textContent, setTextContent] = useState(
@@ -105,7 +107,7 @@ export function CodeSubmitForm({
   }
 
   return (
-    <form action={action} className="space-y-5" encType="multipart/form-data">
+    <form action={action} className="space-y-5">
       <input type="hidden" name="assignmentId" value={assignmentId} />
       <input type="hidden" name="kind" value={mode} />
       <input type="hidden" name="content" value={content} />
@@ -117,11 +119,14 @@ export function CodeSubmitForm({
             { id: "TEXT", label: "Javob" },
             { id: "CODE", label: "Kod (Python)" },
           ] as const
-        ).map((item) => (
+        )
+          .filter((item) => !lockKind || lockKind === item.id)
+          .map((item) => (
           <button
             key={item.id}
             type="button"
             onClick={() => {
+              if (lockKind) return;
               setMode(item.id);
               setRunResult(null);
             }}

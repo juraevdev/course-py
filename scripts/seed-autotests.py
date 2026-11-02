@@ -1,11 +1,16 @@
+#!/usr/bin/env python3
 """
-Prod/local DB ga CODE topshiriqlar uchun avto-testlar yozadi.
-Ishlatish (serverda):
+CODE topshiriqlar uchun avto-testlar (title bo‘yicha).
+Moslashuvchan matchMode: FLEXIBLE / ANY_OF / PATTERN / CONTAINS ...
+
+Ishlatish:
   python3 scripts/seed-autotests.py /var/www/course-py/data/prod.db
+  python3 scripts/seed-autotests.py path/to/dev.db
 """
 
 from __future__ import annotations
 
+import json
 import secrets
 import sqlite3
 import sys
@@ -16,333 +21,667 @@ def nid() -> str:
     return "cmt" + secrets.token_hex(12)
 
 
-# assignmentId -> list of tests
-# Har bir test: (name, stdin, expectedStdout, points, isHidden)
-TESTS: dict[str, list[tuple[str, str, str, int, int]]] = {
-    # 3.1 Birinchi dastur
-    "cmvdt7bmq000rzltmqlgz9ewd": [
-        (
-            "Asosiy chiqish",
-            "",
-            "Salom, men Python o'rganyapman!",
-            100,
-            0,
-        ),
-    ],
-    # 3.4 Xatoni top va tuzat
-    "cmvdt7bno000xzltmp7shgeap": [
-        (
-            "Tuzatilgan kod chiqishi",
-            "",
-            "Salom\nMen dasturchiman\nPython yoqadi",
-            100,
-            0,
-        ),
-    ],
-    # 4.1 Kartochka (namuna qiymatlar)
-    "cmvdt7bp60013zltmc61pxql5": [
-        (
-            "Namuna: Ali / 17 / Toshkent",
-            "",
-            "Ali\n17\nToshkent",
-            100,
-            0,
-        ),
-    ],
-    # 4.2 f-string (namuna)
-    "cmvdt7bqu0015zltml85d06zy": [
-        (
-            "Namuna gap (Ali, 17, Toshkent)",
-            "",
-            "Mening ismim Ali, men 17 yoshdaman va Toshkentda yashayman.",
-            100,
-            0,
-        ),
-    ],
-    # 4.3 sep va end
-    "cmvdt7bro0017zltm20jzq6mv": [
-        (
-            "sep va end",
-            "",
-            "Python-dasturlash-tili!",
-            100,
-            0,
-        ),
-    ],
-    # 4.4 Do'kon hisobi
-    "cmvdt7bs20019zltmbch1tiud": [
-        (
-            "Jami 78000",
-            "",
-            "Jami to'lov: 78000 so'm",
-            100,
-            0,
-        ),
-    ],
-    # 4.5 Qiymat almashtirish
-    "cmvdt7bse001bzltmnjwsogiq": [
-        (
-            "a va b almashtirilgan",
-            "",
-            "a = 10\nb = 5",
-            100,
-            0,
-        ),
-    ],
-    # 4.6 Xatoni top
-    "cmvdt7bsr001dzltm1t7w8x3r": [
-        (
-            "Tuzatilgan chiqish",
-            "",
-            "Ism: Ali\n17",
-            100,
-            0,
-        ),
-    ],
-    # 5.1 Turlarni aniqla
-    "cmvdt7btm001hzltmtzc764ex": [
-        (
-            "8 ta type() chiqishi",
-            "",
-            "\n".join(
-                [
-                    "<class 'int'>",
-                    "<class 'str'>",
-                    "<class 'float'>",
-                    "<class 'bool'>",
-                    "<class 'str'>",
-                    "<class 'int'>",
-                    "<class 'float'>",
-                    "<class 'str'>",
-                ]
-            ),
-            100,
-            0,
-        ),
-    ],
-    # 5.2 Bashorat qil
-    "cmvdt7btw001jzltmwam2h1na": [
-        (
-            "Barcha print natijalari",
-            "",
-            "2.5\n2\n2\n104\n101010\n32\n7\nFalse",
-            100,
-            0,
-        ),
-    ],
-    # 5.3 Talaba ma'lumoti (namuna)
-    "cmvdt7bua001lzltmmg3eog1a": [
-        (
-            "Namuna Ali + typelar",
-            "",
-            "\n".join(
-                [
-                    "ism: Ali -> <class 'str'>",
-                    "yosh: 17 -> <class 'int'>",
-                    "ortacha_ball: 4.5 -> <class 'float'>",
-                    "kontrakt_tolangan: True -> <class 'bool'>",
-                ]
-            ),
-            100,
-            0,
-        ),
-    ],
-    # 5.4 Turni o'zgartirish
-    "cmvdt7bul001nzltm91zmfqtf": [
-        (
-            "15 + 27 = 42",
-            "",
-            "15 + 27 = 42",
-            100,
-            0,
-        ),
-    ],
-    # 5.5 Yosh hisoblagich
-    "cmvdt7buw001pzltmu6mgtlgd": [
-        (
-            "18 yosh / True",
-            "",
-            "Siz 18 yoshdasiz. Voyaga yetganmi: True",
-            100,
-            0,
-        ),
-    ],
-    # 5.7 Taqqoslash
-    "cmvdt7bvl001tzltmxuyfletw": [
-        (
-            "4 ta bool natija",
-            "",
-            "True\nFalse\nTrue\nFalse",
-            100,
-            0,
-        ),
-    ],
-    # 6.1 Salomlashuv — avto-test: input() promptsiz
-    "cmvdt7bwr001xzltmdoghrh0n": [
-        (
-            "Ali",
-            "Ali\n",
-            "Salom, Ali! Python kursiga xush kelibsiz!",
-            100,
-            0,
-        ),
-    ],
-    # 6.2 Kelasi yil
-    "cmvdt7bx5001zzltmojh7ahy0": [
-        (
-            "17 → 18",
-            "17\n",
-            "Kelasi yili siz 18 yoshda bo'lasiz.",
-            100,
-            0,
-        ),
-    ],
-    # 6.3 Ikki son
-    "cmvdt7bxk0021zltmf2ansaq2": [
-        (
-            "8 va 3 (promptsiz)",
-            "8\n3\n",
-            "Yig'indi: 11\nAyirma: 5\nKo'paytma: 24\nButun bo'linma: 2",
-            100,
-            0,
-        ),
-    ],
-    # 6.4 Do'kon kassasi
-    "cmvdt7by20023zltmagu6t9i9": [
-        (
-            "non 4000 x 5 (promptsiz)",
-            "non\n4000\n5\n",
-            "Mahsulot: non\nJami to'lov: 20000 so'm",
-            100,
-            0,
-        ),
-    ],
-    # 6.5 Doira yuzi
-    "cmvdt7byd0025zltm3yoi7euj": [
-        (
-            "r=5 → 78.5 (promptsiz)",
-            "5\n",
-            "Doira yuzi: 78.5",
-            100,
-            0,
-        ),
-    ],
-    # 6.6 Harorat
-    "cmvdt7byt0027zltmr2klinv4": [
-        (
-            "25C → 77F (promptsiz)",
-            "25\n",
-            "25.0°C = 77.0°F",
-            100,
-            0,
-        ),
-    ],
-    # Umumiy: Yagona dastur
-    "cmvdt7c12002hzltma2fpb8gl": [
-        (
-            "Ali / 17 / 3000000 (promptsiz)",
-            "Ali\n17\n3000000\n",
-            "Salom, Ali!\nYillik daromad: 36000000 so'm\n5 yildan keyin yoshingiz: 22\nYoshi 18 dan katta: False",
-            100,
-            0,
-        ),
-    ],
-}
-
+# title -> (answerKind, note_or_None, tests[])
+# test: (name, stdin, expected, alts_list, matchMode, codeMustMatch|None, points, isHidden)
+TestsSpec = list[tuple[str, str, str, list[str], str, str | None, int, int]]
 
 INPUT_NOTE = (
     "\n\n---\nAvto-tekshiruv: `input()` ni promptsiz yozing "
     "(masalan `x = input()` yoki `x = int(input())`). "
-    "Faqat `print()` chiqishi tekshiriladi."
+    "Faqat `print()` chiqishi tekshiriladi. Format biroz farq qilsa ham "
+    "(apostrof, bo‘shliq, `78.50` vs `78.5`) qabul qilinadi."
 )
-
-INPUT_ASSIGNMENTS = {
-    "cmvdt7bwr001xzltmdoghrh0n",
-    "cmvdt7bx5001zzltmojh7ahy0",
-    "cmvdt7bxk0021zltmf2ansaq2",
-    "cmvdt7by20023zltmagu6t9i9",
-    "cmvdt7byd0025zltm3yoi7euj",
-    "cmvdt7byt0027zltmr2klinv4",
-    "cmvdt7c12002hzltma2fpb8gl",
-}
 
 SAMPLE_NOTE = (
-    "\n\n---\nAvto-tekshiruv namuna qiymatlari: "
-    "ism=`Ali`, yosh=`17`, shahar=`Toshkent` "
-    "(yoki topshiriqdagi kutilgan format)."
+    "\n\n---\nAvto-tekshiruv: o‘z qiymatlaringiz bilan yozishingiz mumkin. "
+    "Tekshiruv chiqish tuzilmasini (qatorlar / majburiy qismlar) tekshiradi — "
+    "faqat bitta namuna matnga bog‘lanmaydi."
 )
 
-SAMPLE_ASSIGNMENTS = {
-    "cmvdt7bp60013zltmc61pxql5",
-    "cmvdt7bqu0015zltml85d06zy",
-    "cmvdt7bua001lzltmmg3eog1a",
+SPECS: dict[str, tuple[str, str | None, TestsSpec]] = {
+    "Birinchi dastur": (
+        "CODE",
+        None,
+        [
+            (
+                "Salom + Python chiqishi",
+                "",
+                r"(?is)salom.*python",
+                [
+                    "Salom, men Python o'rganyapman!",
+                    "Salom, men Python o‘rganyapman!",
+                ],
+                "PATTERN",
+                r"print\s*\(",
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Tanishtiruv": (
+        "CODE",
+        SAMPLE_NOTE,
+        [
+            (
+                "Ism/yosh/shahar chiqishi",
+                "",
+                r"(?is).+\d+.+",
+                [],
+                "PATTERN",
+                r"print\s*\(",
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Izoh qo'shish": (
+        "CODE",
+        SAMPLE_NOTE,
+        [
+            (
+                "Kamida 2 izoh + chiqish",
+                "",
+                r"(?s)^.+\n.+\n.+$",
+                [],
+                "PATTERN",
+                r"(?ms)^\s*#.*$.*?^\s*#",
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Xatoni top va tuzat": (
+        "CODE",
+        None,
+        [
+            (
+                "Tuzatilgan kod chiqishi",
+                "",
+                "Salom\nMen dasturchiman\nPython yoqadi",
+                [],
+                "FLEXIBLE",
+                None,
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Kartochka": (
+        "CODE",
+        SAMPLE_NOTE,
+        [
+            (
+                "3 qator (ism / yosh / shahar)",
+                "",
+                r"(?s)^.+\n\d+\n.+$",
+                [],
+                "PATTERN",
+                r"print\s*\(",
+                1,
+                0,
+            ),
+        ],
+    ),
+    "f-string bilan tanishtiruv": (
+        "CODE",
+        SAMPLE_NOTE,
+        [
+            (
+                "Bitta gap, ism/yosh/shahar",
+                "",
+                r"(?is)^mening ismim .+, men \d+ yoshdaman va .+da yashayman\.?$",
+                [
+                    r"(?is)^mening ismim .+, men \d+ yoshdaman va .+ da yashayman\.?$",
+                ],
+                "PATTERN",
+                r"[fF][\"']|[fF]\"\"\"|format\s*\(",
+                1,
+                0,
+            ),
+        ],
+    ),
+    "sep va end": (
+        "CODE",
+        None,
+        [
+            (
+                "sep va end",
+                "",
+                "Python-dasturlash-tili!",
+                ["Python-dasturlash-tili"],
+                "ANY_OF",
+                r"sep\s*=",
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Do'kon hisobi": (
+        "CODE",
+        None,
+        [
+            (
+                "Jami 78000",
+                "",
+                "Jami to'lov: 78000 so'm",
+                [
+                    "Jami to‘lov: 78000 so‘m",
+                    "Jami tolov: 78000 som",
+                    "Jami to'lov: 78000",
+                    "78000",
+                ],
+                "ANY_OF",
+                None,
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Qiymat almashtirish": (
+        "CODE",
+        None,
+        [
+            (
+                "a=10, b=5 chiqishi",
+                "",
+                "a = 10\nb = 5",
+                ["a=10\nb=5", "10\n5", "a = 10\nb = 5"],
+                "ANY_OF",
+                None,
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Xatoni top": (
+        # Bir nechta "Xatoni top" bor — faqat CODE + f-string tuzatishiga test
+        "CODE",
+        None,
+        [
+            (
+                "Ali va 17 chiqishi",
+                "",
+                r"(?is)ali[\s\S]*17",
+                ["Ism: Ali\n17"],
+                "PATTERN",
+                r"print\s*\(",
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Turlarni aniqla": (
+        "CODE",
+        None,
+        [
+            (
+                "8 ta type() chiqishi",
+                "",
+                "\n".join(
+                    [
+                        "<class 'int'>",
+                        "<class 'str'>",
+                        "<class 'float'>",
+                        "<class 'bool'>",
+                        "<class 'str'>",
+                        "<class 'int'>",
+                        "<class 'float'>",
+                        "<class 'str'>",
+                    ]
+                ),
+                [],
+                "UNORDERED_LINES",
+                r"type\s*\(",
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Bashorat qil": (
+        "CODE",
+        None,
+        [
+            (
+                "Barcha print natijalari",
+                "",
+                "2.5\n2\n2\n104\n101010\n32\n7\nFalse",
+                ["2.5\n2\n2\n104\n101010\n32\n7\nfalse"],
+                "FLEXIBLE",
+                None,
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Talaba ma'lumoti": (
+        "CODE",
+        SAMPLE_NOTE,
+        [
+            (
+                "4 qator: qiymat + type",
+                "",
+                r"(?s)^ism: .+ -> <class 'str'>\n"
+                r"yosh: \d+ -> <class 'int'>\n"
+                r"ortacha_ball: [\d.]+ -> <class 'float'>\n"
+                r"kontrakt_tolangan: (True|False) -> <class 'bool'>$",
+                [],
+                "PATTERN",
+                r"type\s*\(",
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Turni o'zgartirish": (
+        "CODE",
+        None,
+        [
+            (
+                "15 + 27 = 42",
+                "",
+                "15 + 27 = 42",
+                ["15+27=42", "15 + 27 =42"],
+                "ANY_OF",
+                r"int\s*\(",
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Yosh hisoblagich": (
+        "CODE",
+        None,
+        [
+            (
+                "18 yosh / True",
+                "",
+                r"(?is)18.*(?:true|voyaga)",
+                [
+                    "Siz 18 yoshdasiz. Voyaga yetganmi: True",
+                    "Siz 18 yoshdasiz,voyaga yetganmi:True",
+                    "Siz 18 yoshdasiz. Voyaga yetganmi:True",
+                ],
+                "PATTERN",
+                None,
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Taqqoslash": (
+        "CODE",
+        None,
+        [
+            (
+                "4 ta bool natija",
+                "",
+                "True\nFalse\nTrue\nFalse",
+                [],
+                "FLEXIBLE",
+                None,
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Salomlashuv": (
+        "CODE",
+        INPUT_NOTE,
+        [
+            (
+                "Ali",
+                "Ali\n",
+                "Salom, Ali! Python kursiga xush kelibsiz!",
+                [
+                    "Salom, Ali! Python kursiga xush kelibsiz",
+                    "Salom Ali! Python kursiga xush kelibsiz!",
+                ],
+                "ANY_OF",
+                r"input\s*\(",
+                1,
+                0,
+            ),
+            (
+                "Dilnoza",
+                "Dilnoza\n",
+                "Salom, Dilnoza! Python kursiga xush kelibsiz!",
+                [],
+                "FLEXIBLE",
+                r"input\s*\(",
+                1,
+                1,
+            ),
+        ],
+    ),
+    "Kelasi yil necha yoshda bo'laman?": (
+        "CODE",
+        INPUT_NOTE,
+        [
+            (
+                "17 → 18",
+                "17\n",
+                "Kelasi yili siz 18 yoshda bo'lasiz.",
+                [
+                    "Kelasi yili siz 18 yoshda bo‘lasiz.",
+                    "Kelasi yili siz 18 yoshda bo'lasiz",
+                ],
+                "ANY_OF",
+                r"input\s*\(",
+                1,
+                0,
+            ),
+            (
+                "20 → 21",
+                "20\n",
+                "Kelasi yili siz 21 yoshda bo'lasiz.",
+                [],
+                "FLEXIBLE",
+                r"input\s*\(",
+                1,
+                1,
+            ),
+        ],
+    ),
+    "Ikki son yig'indisi": (
+        "CODE",
+        INPUT_NOTE,
+        [
+            (
+                "8 va 3",
+                "8\n3\n",
+                "Yig'indi: 11\nAyirma: 5\nKo'paytma: 24\nButun bo'linma: 2",
+                [],
+                "CONTAINS",
+                r"input\s*\(",
+                1,
+                0,
+            ),
+            (
+                "10 va 2",
+                "10\n2\n",
+                "Yig'indi: 12\nAyirma: 8\nKo'paytma: 20\nButun bo'linma: 5",
+                [],
+                "CONTAINS",
+                r"input\s*\(",
+                1,
+                1,
+            ),
+        ],
+    ),
+    "Do'kon kassasi": (
+        "CODE",
+        INPUT_NOTE,
+        [
+            (
+                "non 4000 x 5",
+                "non\n4000\n5\n",
+                "Mahsulot: non\nJami to'lov: 20000 so'm",
+                [
+                    "Mahsulot: non\nJami to‘lov: 20000 so‘m",
+                    "non\n20000",
+                ],
+                "CONTAINS",
+                r"input\s*\(",
+                1,
+                0,
+            ),
+            (
+                "sut 12000 x 2",
+                "sut\n12000\n2\n",
+                "24000",
+                [],
+                "CONTAINS",
+                r"input\s*\(",
+                1,
+                1,
+            ),
+        ],
+    ),
+    "Doira yuzi": (
+        "CODE",
+        INPUT_NOTE,
+        [
+            (
+                "r=5 → 78.5",
+                "5\n",
+                "Doira yuzi: 78.5",
+                ["Doira yuzi: 78.50", "78.5", "Doira yuzi:78.5"],
+                "ANY_OF",
+                r"input\s*\(",
+                1,
+                0,
+            ),
+            (
+                "r=2 → 12.56",
+                "2\n",
+                "12.56",
+                ["Doira yuzi: 12.56", "12.560"],
+                "CONTAINS",
+                r"input\s*\(",
+                1,
+                1,
+            ),
+        ],
+    ),
+    "Harorat konvertori": (
+        "CODE",
+        INPUT_NOTE,
+        [
+            (
+                "25C → 77F",
+                "25\n",
+                "25.0°C = 77.0°F",
+                [
+                    "25.0 C = 77.0 F",
+                    "25°C = 77°F",
+                    "25.0°C = 77.0°F",
+                    "25.0C = 77.0F",
+                ],
+                "ANY_OF",
+                r"input\s*\(",
+                1,
+                0,
+            ),
+            (
+                "0C → 32F",
+                "0\n",
+                "32",
+                ["0.0°C = 32.0°F", "32.0"],
+                "CONTAINS",
+                r"input\s*\(",
+                1,
+                1,
+            ),
+        ],
+    ),
+    'Mini loyiha: "Tanishuv anketasi"': (
+        "CODE",
+        INPUT_NOTE + SAMPLE_NOTE,
+        [
+            (
+                "Anketa: ism/familiya/yosh/shahar",
+                "Ali\nValiyev\n2008\nToshkent\n",
+                r"(?is)(ism|familiya|shahar|yosh|anketa).*\d+",
+                [],
+                "PATTERN",
+                r"print\s*\(",
+                1,
+                0,
+            ),
+            (
+                "input yoki hisoblangan yosh",
+                "Sara\nKarimova\n2005\nSamarqand\n",
+                r"(?is).*\d{1,3}.*",
+                [],
+                "PATTERN",
+                r"print\s*\(",
+                1,
+                1,
+            ),
+        ],
+    ),
+    "Yagona dastur": (
+        "CODE",
+        INPUT_NOTE,
+        [
+            (
+                "Ali / 17 / 3000000",
+                "Ali\n17\n3000000\n",
+                "Salom, Ali!\nYillik daromad: 36000000 so'm\n5 yildan keyin yoshingiz: 22\nYoshi 18 dan katta: False",
+                [],
+                "CONTAINS",
+                r"input\s*\(",
+                1,
+                0,
+            ),
+            (
+                "Bobur / 20 / 1000000",
+                "Bobur\n20\n1000000\n",
+                "Salom, Bobur!\n12000000\n25\nTrue",
+                [],
+                "CONTAINS",
+                r"input\s*\(",
+                1,
+                1,
+            ),
+        ],
+    ),
 }
+
+# "Xatoni top" dublikatlari: faqat descriptionda f-string / o'zgaruvchi nomlash
+XATO_CODE_HINT = "talaba yoshi"
+
+
+def ensure_columns(cur: sqlite3.Cursor) -> None:
+    cols = {r[1] for r in cur.execute("PRAGMA table_info(Assignment)").fetchall()}
+    if "answerKind" not in cols:
+        cur.execute(
+            "ALTER TABLE Assignment ADD COLUMN answerKind TEXT NOT NULL DEFAULT 'TEXT'"
+        )
+    tcols = {r[1] for r in cur.execute("PRAGMA table_info(AssignmentTest)").fetchall()}
+    if "expectedAlternatives" not in tcols:
+        cur.execute(
+            "ALTER TABLE AssignmentTest ADD COLUMN expectedAlternatives TEXT NOT NULL DEFAULT '[]'"
+        )
+    if "matchMode" not in tcols:
+        cur.execute(
+            "ALTER TABLE AssignmentTest ADD COLUMN matchMode TEXT NOT NULL DEFAULT 'FLEXIBLE'"
+        )
+    if "codeMustMatch" not in tcols:
+        cur.execute("ALTER TABLE AssignmentTest ADD COLUMN codeMustMatch TEXT")
 
 
 def seed(db_path: Path) -> None:
     con = sqlite3.connect(db_path)
     cur = con.cursor()
+    ensure_columns(cur)
 
-    existing = {
-        row[0]
-        for row in cur.execute("SELECT id FROM Assignment").fetchall()
-    }
+    rows = cur.execute(
+        "SELECT id, title, description FROM Assignment"
+    ).fetchall()
+    by_title: dict[str, list[tuple[str, str]]] = {}
+    for aid, title, desc in rows:
+        by_title.setdefault(title, []).append((aid, desc or ""))
 
     inserted = 0
+    updated_kind = 0
     skipped = 0
-    for assignment_id, tests in TESTS.items():
-        if assignment_id not in existing:
-            print(f"SKIP missing assignment {assignment_id}")
+
+    for title, (answer_kind, note, tests) in SPECS.items():
+        matches = by_title.get(title, [])
+        if not matches:
+            print(f"SKIP missing title: {title}")
             skipped += 1
             continue
 
-        cur.execute(
-            "DELETE FROM AssignmentTest WHERE assignmentId = ?",
-            (assignment_id,),
-        )
+        # "Xatoni top" — faqat CODE variant (talaba yoshi)
+        if title == "Xatoni top":
+            matches = [
+                m for m in matches if XATO_CODE_HINT in m[1] or "1-ism" in m[1]
+            ]
+            if not matches:
+                print("SKIP Xatoni top (CODE variant topilmadi)")
+                skipped += 1
+                continue
 
-        for i, (name, stdin, expected, points, hidden) in enumerate(tests):
+        for assignment_id, desc in matches:
             cur.execute(
-                """
-                INSERT INTO AssignmentTest
-                  (id, assignmentId, name, stdin, expectedStdout, points, sortOrder, isHidden, createdAt)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
-                """,
-                (
-                    nid(),
-                    assignment_id,
-                    name,
-                    stdin,
-                    expected,
-                    points,
-                    i,
-                    hidden,
-                ),
+                "UPDATE Assignment SET answerKind = ? WHERE id = ?",
+                (answer_kind, assignment_id),
             )
-            inserted += 1
-            print(f"+ {assignment_id[:12]}… {name}")
+            updated_kind += 1
 
-        # Eslatma (bir marta)
-        row = cur.execute(
-            "SELECT description FROM Assignment WHERE id = ?",
-            (assignment_id,),
-        ).fetchone()
-        if row:
-            desc = row[0] or ""
-            note = ""
-            if assignment_id in INPUT_ASSIGNMENTS and "Avto-tekshiruv:" not in desc:
-                note = INPUT_NOTE
-            if assignment_id in SAMPLE_ASSIGNMENTS and "Avto-tekshiruv namuna" not in desc:
-                note = SAMPLE_NOTE
-            if note:
+            cur.execute(
+                "DELETE FROM AssignmentTest WHERE assignmentId = ?",
+                (assignment_id,),
+            )
+
+            for i, (
+                name,
+                stdin,
+                expected,
+                alts,
+                mode,
+                code_re,
+                points,
+                hidden,
+            ) in enumerate(tests):
+                cur.execute(
+                    """
+                    INSERT INTO AssignmentTest
+                      (id, assignmentId, name, stdin, expectedStdout,
+                       expectedAlternatives, matchMode, codeMustMatch,
+                       points, sortOrder, isHidden, createdAt)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+                    """,
+                    (
+                        nid(),
+                        assignment_id,
+                        name,
+                        stdin,
+                        expected,
+                        json.dumps(alts, ensure_ascii=False),
+                        mode,
+                        code_re,
+                        points,
+                        i,
+                        hidden,
+                    ),
+                )
+                inserted += 1
+                print(f"+ {title} :: {name} [{mode}]".encode("utf-8", "replace").decode("utf-8"))
+
+            if note and "Avto-tekshiruv" not in desc:
                 cur.execute(
                     "UPDATE Assignment SET description = ? WHERE id = ?",
                     (desc + note, assignment_id),
                 )
 
+    # TEXT topshiriqlarni aniq belgilash (CODE emas)
+    code_titles = set(SPECS.keys())
+    for aid, title, desc in rows:
+        if title in code_titles:
+            continue
+        # Izoh / mini tadqiqot yozma
+        if "Turi: kod" in (desc or "") or "print(" in (desc or ""):
+            # ba'zi kod topshiriqlar SPECS da yo'q — CODE qilib qo'yamiz
+            if title not in ("Python haqida mini-tadqiqot",):
+                cur.execute(
+                    "UPDATE Assignment SET answerKind = 'CODE' WHERE id = ?",
+                    (aid,),
+                )
+                updated_kind += 1
+        else:
+            cur.execute(
+                "UPDATE Assignment SET answerKind = 'TEXT' WHERE id = ?",
+                (aid,),
+            )
+
     con.commit()
     con.close()
-    print(f"Done. inserted={inserted} skipped_assignments={skipped}")
+    print(
+        f"Done. tests_inserted={inserted} kinds_touched={updated_kind} skipped={skipped}"
+    )
 
 
 if __name__ == "__main__":

@@ -133,7 +133,21 @@ export default async function StudentAssignmentPage({
         <CodeSubmitForm
           assignmentId={assignment.id}
           defaultValue={submission?.content}
-          defaultKind={submission?.kind}
+          defaultKind={
+            submission?.kind ||
+            (assignment.answerKind === "CODE"
+              ? "CODE"
+              : assignment.answerKind === "TEXT"
+                ? "TEXT"
+                : null)
+          }
+          lockKind={
+            assignment.answerKind === "CODE"
+              ? "CODE"
+              : assignment.answerKind === "TEXT"
+                ? "TEXT"
+                : null
+          }
           fileName={submission?.fileName}
         />
       </Panel>

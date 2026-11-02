@@ -38,6 +38,9 @@ export function TestReportList({
                 {test.passed ? "O‘tdi" : "Yiqildi"} · {test.earned}/{test.points}
               </StatusTag>
             </div>
+            {!test.passed && test.reason ? (
+              <p className="mt-1 text-xs text-[#9F2F2D]">{test.reason}</p>
+            ) : null}
             {!test.isHidden && !test.passed ? (
               <div className="mt-2 space-y-1 font-[family-name:var(--font-mono)] text-xs text-[var(--muted)]">
                 {test.expected != null ? (

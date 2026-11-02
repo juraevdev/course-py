@@ -59,6 +59,7 @@ export default async function EditAssignmentPage({
             dueAt: toDateInputValue(assignment.dueAt),
             cohortId: assignment.cohortId,
             maxScore: assignment.maxScore,
+            answerKind: assignment.answerKind,
           }}
         />
       </Panel>

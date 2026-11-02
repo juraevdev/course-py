@@ -1,5 +1,11 @@
 import { prisma } from "./prisma";
-import { normalizeStdout, runPythonCode } from "./runner";
+import {
+  matchCodeConstraint,
+  matchStdout,
+  normalizeFlexible,
+  type MatchModeName,
+} from "./grade-match";
+import { runPythonCode } from "./runner";
 
 export type TestCaseResult = {
   id: string;
@@ -12,6 +18,7 @@ export type TestCaseResult = {
   stderr?: string;
   expected?: string;
   error?: string | null;
+  reason?: string;
 };
 
 export type AutogradeResult = {
@@ -41,14 +48,36 @@ export async function gradeCodeAgainstTests(
   let testsPassed = 0;
 
   for (const test of assignment.tests) {
-    const result = await runPythonCode(code, test.stdin);
-    const actual = normalizeStdout(result.stdout);
-    const expected = normalizeStdout(test.expectedStdout);
-    const passed =
-      result.ok &&
-      !result.timed_out &&
-      !result.error &&
-      actual === expected;
+    let passed = false;
+    let reason: string | undefined;
+    let actual = "";
+    let stderr = "";
+    let runError: string | null = null;
+
+    if (!matchCodeConstraint(code, test.codeMustMatch)) {
+      reason = "Kod sharti bajarilmadi (majburiy naqsh/izoh).";
+    } else {
+      const result = await runPythonCode(code, test.stdin);
+      actual = result.stdout || "";
+      stderr = result.stderr || "";
+      runError = result.error;
+
+      if (!result.ok || result.timed_out || result.error) {
+        reason = result.timed_out
+          ? "Vaqt tugadi."
+          : result.error || result.stderr || "Ishga tushmadi.";
+      } else {
+        passed = matchStdout({
+          actual,
+          expected: test.expectedStdout,
+          alternatives: test.expectedAlternatives,
+          mode: test.matchMode as MatchModeName,
+        });
+        if (!passed) {
+          reason = "Chiqish kutilgan natijaga mos kelmadi.";
+        }
+      }
+    }
 
     if (passed) {
       testsPassed += 1;
@@ -62,12 +91,15 @@ export async function gradeCodeAgainstTests(
       points: test.points,
       earned: passed ? test.points : 0,
       isHidden: test.isHidden,
-      stdout: test.isHidden ? undefined : actual,
+      stdout: test.isHidden ? undefined : normalizeFlexible(actual),
       stderr: test.isHidden
         ? undefined
-        : result.stderr || result.error || undefined,
-      expected: test.isHidden ? undefined : expected,
-      error: result.error,
+        : stderr || runError || undefined,
+      expected: test.isHidden
+        ? undefined
+        : normalizeFlexible(test.expectedStdout),
+      error: runError,
+      reason: test.isHidden && !passed ? "Test o‘tmadi." : reason,
     });
   }
 
@@ -106,6 +138,7 @@ export function publicTestReport(report: TestCaseResult[]): TestCaseResult[] {
           points: item.points,
           earned: item.earned,
           isHidden: true,
+          reason: item.passed ? undefined : item.reason || "Test o‘tmadi.",
         }
       : item,
   );

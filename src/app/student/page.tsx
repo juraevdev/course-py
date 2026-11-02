@@ -88,6 +88,12 @@ export default async function StudentHomePage() {
     ? Math.round((submittedCount / assignmentTotal) * 100)
     : 0;
 
+  const telegramPrefs = await prisma.notificationPreference.findUnique({
+    where: { userId: user.id },
+    select: { telegramChatId: true, telegramEnabled: true },
+  });
+  const telegramLinked = Boolean(telegramPrefs?.telegramChatId);
+
   return (
     <>
       <PageIntro
@@ -103,6 +109,22 @@ export default async function StudentHomePage() {
           </Link>
         }
       />
+
+      {!telegramLinked ? (
+        <Panel className="mb-6 !py-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-[var(--body)]">
+              Telegramni bog‘lang — yangi topshiriq va izohlar telefoningizga keladi.
+            </p>
+            <Link
+              href="/student/settings"
+              className="rounded-[6px] border border-[var(--line)] bg-[var(--btn-secondary-bg)] px-4 py-2 text-sm font-medium"
+            >
+              Sozlamalar
+            </Link>
+          </div>
+        </Panel>
+      ) : null}
 
       <div className="mb-8 grid gap-4 md:grid-cols-3">
         <Panel className="!p-5">
