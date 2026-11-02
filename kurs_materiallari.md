@@ -1,8 +1,8 @@
-# Python kursi: 1–6-mavzular uchun qo'shimcha materiallar
+# Python kursi: 1–7-mavzular uchun qo'shimcha materiallar
 
 ## Cursor uchun ko'rsatma
 
-Quyida o'quvchilar uchun 6 ta mavzuning qo'shimcha materiallari bor. Har bir mavzu bir xil tuzilishga ega:
+Quyida o'quvchilar uchun 7 ta mavzuning qo'shimcha materiallari bor. Har bir mavzu bir xil tuzilishga ega:
 
 1. **Qisqacha mazmun**: mavzu kartasi uchun 1–2 gap
 2. **Qo'shimcha tushuntirish**: asosiy matn
@@ -935,7 +935,246 @@ Yoshni tug'ilgan yildan hisoblang.
 
 ---
 
-# Qo'shimcha: umumiy takrorlash topshiriqlari (1–6-mavzular)
+# 7-mavzu: if / elif / else
+
+`slug: if-elif-else`
+
+## Qisqacha mazmun
+Shartli operatorlar bilan dastur qaror qabul qilishni o'rganamiz: `if`, `elif`, `else` va taqqoslash / mantiqiy operatorlar.
+
+## Qo'shimcha tushuntirish
+
+**Nima uchun shart kerak?**
+Hozirgacha dasturlar har doim bir xil yo'l bilan ishlardi. Hayotda esa shart bor: yomg'ir yog'sa soyabon olamiz, aks holda olmaymiz. Dasturlashda ham: ma'lum shart rost bo'lsa bir ish, yolg'on bo'lsa boshqa ish qilinadi.
+
+**Eng oddiy if**
+```python
+yosh = 17
+if yosh >= 18:
+    print("Voyaga yetgan")
+```
+`if` dan keyin **shart** yoziladi, oxirida `:` qo'yiladi. Keyingi qator(lar) **bo'sh joy (indent)** bilan ichkariga suriladi — bu Python uchun "shu blok `if` ga tegishli" degani.
+
+**else: aks holda**
+```python
+yosh = 17
+if yosh >= 18:
+    print("Voyaga yetgan")
+else:
+    print("Voyaga yetmagan")
+```
+Shart yolg'on bo'lsa, `else` bloki ishlaydi. `else` da shart yozilmaydi.
+
+**elif: yana bir nechta shart**
+```python
+ball = 72
+if ball >= 90:
+    print("A'lo")
+elif ball >= 70:
+    print("Yaxshi")
+elif ball >= 50:
+    print("Qoniqarli")
+else:
+    print("Qayta topshirish kerak")
+```
+Python yuqoridan pastga tekshiradi. **Birinchi rost** shartning bloki bajariladi, qolganlari o'tkazib yuboriladi.
+
+**Taqqoslash operatorlari**
+| Operator | Ma'nosi |
+|---|---|
+| `==` | tengmi? |
+| `!=` | teng emasmi? |
+| `>` `<` | katta / kichik |
+| `>=` `<=` | katta yoki teng / kichik yoki teng |
+
+Eslatma: `=` qiymat beradi, `==` solishtiradi.
+
+**Mantiqiy operatorlar**
+```python
+yosh = 20
+passport = True
+
+if yosh >= 18 and passport:
+    print("Kirish mumkin")
+
+if yosh < 7 or yosh > 65:
+    print("Chegirma bor")
+
+if not passport:
+    print("Passport kerak")
+```
+- `and` — ikkalasi ham rost
+- `or` — hech bo'lmaganda bittasi rost
+- `not` — teskari qiladi
+
+**input() bilan if**
+```python
+ball = int(input())
+if ball >= 60:
+    print("O'tdi")
+else:
+    print("O'tmadi")
+```
+
+**Ichma-ich (nested) if**
+```python
+yosh = 20
+if yosh >= 18:
+    if yosh >= 65:
+        print("Nafaqa yoshi")
+    else:
+        print("Ishlash yoshi")
+else:
+    print("Voyaga yetmagan")
+```
+Boshlang'ichda nested o'rniga `elif` bilan yozish odatda osonroq va tushunarliroq.
+
+**Truthy / Falsy (qisqa)**
+Bo'sh matn `""`, `0`, `False`, `None` — shart sifatida **yolg'on** hisoblanadi. Boshqa qiymatlar odatda rost.
+
+## Asosiy tushunchalar
+- **`if`**: shart rost bo'lsa blokni bajaradi
+- **`elif`**: oldingi shartlar yolg'on bo'lsa, yangi shartni tekshiradi
+- **`else`**: hech qaysi shart rost bo'lmasa ishlaydi
+- **Shart (condition)**: `True` yoki `False` beradigan ifoda
+- **Indentatsiya**: Python da blokni belgilovchi bo'sh joy (odatda 4 probel)
+- **`==` / `!=` / `>` / `<` / `>=` / `<=`**: taqqoslash
+- **`and` / `or` / `not`**: mantiqiy bog'lovchilar
+- **Tarmoqlanish (branching)**: dastur yo'lining shartga qarab ajralishi
+
+## Kod namunalari
+
+```python
+# 1) Juft yoki toq
+n = int(input())
+if n % 2 == 0:
+    print("Juft")
+else:
+    print("Toq")
+```
+
+```python
+# 2) Parol tekshiruvi
+parol = input()
+if parol == "python123":
+    print("Xush kelibsiz")
+else:
+    print("Parol xato")
+```
+
+```python
+# 3) Baholash
+ball = int(input())
+if ball < 0 or ball > 100:
+    print("Noto'g'ri ball")
+elif ball >= 90:
+    print("A")
+elif ball >= 80:
+    print("B")
+elif ball >= 70:
+    print("C")
+elif ball >= 60:
+    print("D")
+else:
+    print("F")
+```
+
+## Tez-tez uchraydigan xatolar
+- **`:` ni unutish:** `if yosh >= 18` oxirida ikki nuqta bo'lishi shart.
+- **Indent yo'q:** `if` dan keyingi qator ichkariga surilmasa `IndentationError`.
+- **`=` o'rniga `==`:** `if yosh = 18` xato; to'g'risi `if yosh == 18`.
+- **Matnni son bilan solishtirish:** `input()` matn qaytaradi; `int()` qilmasdan `>=` ishlatmang.
+- **`elif` o'rniga ketma-ket `if`:** ba'zan bir nechta blok ishlab ketadi; "faqat bittasi" kerak bo'lsa `elif` ishlating.
+- **Bo'sh blok:** hozircha hech narsa qilmaslik uchun `pass` yoziladi (keyinroq).
+
+## Resurslar
+- [W3Schools: Python If ... Else](https://www.w3schools.com/python/python_conditions.asp): qisqa misollar
+- [Python docs: if statements](https://docs.python.org/3/tutorial/controlflow.html#if-statements): rasmiy qo'llanma
+- [Real Python: Conditional Statements](https://realpython.com/python-conditional-statements/): chuqurroq tushuntirish
+- [W3Schools: Python Operators](https://www.w3schools.com/python/python_operators.asp): taqqoslash va mantiqiy operatorlar
+
+## Topshiriqlar
+
+### Topshiriq 7.1: Voyaga yetganmi?
+- **Turi:** kod
+- **Qiyinlik:** oson
+- **Shart:** Foydalanuvchidan yoshni (`int`) so'rang. Agar `yosh >= 18` bo'lsa `Voyaga yetgan`, aks holda `Voyaga yetmagan` chiqaring.
+- **Maslahat:** `yosh = int(input())` va `if/else`.
+- **Kutilgan natija:** (17 kiritilsa)
+```
+Voyaga yetmagan
+```
+(20 kiritilsa)
+```
+Voyaga yetgan
+```
+
+### Topshiriq 7.2: Juft yoki toq
+- **Turi:** kod
+- **Qiyinlik:** oson
+- **Shart:** Foydalanuvchidan butun son so'rang. Juft bo'lsa `Juft`, toq bo'lsa `Toq` chiqaring.
+- **Maslahat:** `n % 2 == 0` juftlikni tekshiradi.
+- **Kutilgan natija:** (8 kiritilsa) `Juft`; (7 kiritilsa) `Toq`.
+
+### Topshiriq 7.3: Imtihon natijasi
+- **Turi:** kod
+- **Qiyinlik:** oson
+- **Shart:** Foydalanuvchidan ball so'rang (0–100). `ball >= 60` bo'lsa `O'tdi`, aks holda `O'tmadi` chiqaring.
+- **Maslahat:** Oddiy `if/else`.
+- **Kutilgan natija:** (72) `O'tdi`; (45) `O'tmadi`.
+
+### Topshiriq 7.4: Baholash tizimi
+- **Turi:** kod
+- **Qiyinlik:** o'rta
+- **Shart:** Ballga qarab baho chiqaring: 90+ → `A`, 80–89 → `B`, 70–79 → `C`, 60–69 → `D`, 60 dan past → `F`.
+- **Maslahat:** `if / elif / else` zanjiri; yuqoridan pastga tekshiring.
+- **Kutilgan natija:** (95) `A`; (83) `B`; (55) `F`.
+
+### Topshiriq 7.5: Login (parol)
+- **Turi:** kod
+- **Qiyinlik:** o'rta
+- **Shart:** Foydalanuvchidan parol so'rang. Agar parol `python123` bo'lsa `Xush kelibsiz`, aks holda `Parol xato` chiqaring.
+- **Maslahat:** Matnlarni `==` bilan solishtiring.
+- **Kutilgan natija:** (`python123`) `Xush kelibsiz`; (`12345`) `Parol xato`.
+
+### Topshiriq 7.6: Eng katta son
+- **Turi:** kod
+- **Qiyinlik:** o'rta
+- **Shart:** Foydalanuvchidan ikkita butun son so'rang va kattasini chiqaring. Agar teng bo'lsa `Teng` deb yozing.
+- **Maslahat:** `if a > b` / `elif a < b` / `else`.
+- **Kutilgan natija:** (8 va 3) `8`; (4 va 9) `9`; (5 va 5) `Teng`.
+
+### Topshiriq 7.7: Xatoni top
+- **Turi:** xato qidirish
+- **Qiyinlik:** o'rta
+- **Shart:** Quyidagi kodda xatolar bor. Toping va tuzating (natija: yosh 20 bo'lsa `Katta`):
+```python
+yosh = 20
+if yosh = 18
+print("Kichik")
+elif yosh > 18:
+print("Katta")
+```
+- **Maslahat:** `==` va `:`, indentatsiyani tekshiring.
+- **Kutilgan natija:**
+```python
+yosh = 20
+if yosh == 18:
+    print("Kichik")
+elif yosh > 18:
+    print("Katta")
+```
+
+### Topshiriq 7.8: Mini loyiha: "Chipta narxi"
+- **Turi:** loyiha
+- **Qiyinlik:** qiyin
+- **Shart:** Foydalanuvchidan yoshni so'rang va chipta narxini hisoblang: 0–6 yosh bepul (`Bepul`), 7–17 yosh `15000 so'm`, 18–64 yosh `25000 so'm`, 65+ yosh `10000 so'm`. Natijani shu matnlar bilan chiqaring.
+- **Maslahat:** `elif` zanjiri; chegaralarni diqqat bilan yozing (`yosh <= 6`, `yosh <= 17`, ...).
+- **Kutilgan natija:** (5) `Bepul`; (15) `15000 so'm`; (30) `25000 so'm`; (70) `10000 so'm`.
+
+---
+
+# Qo'shimcha: umumiy takrorlash topshiriqlari (1–7-mavzular)
 
 `slug: umumiy-takrorlash`
 
@@ -944,8 +1183,8 @@ Bu bo'lim alohida sahifa bo'lib, barcha mavzular bo'yicha bilimni mustahkamlaydi
 ### Takrorlash 1: Mavzularni bog'la
 - **Turi:** nazariy
 - **Qiyinlik:** o'rta
-- **Shart:** Quyidagi tushunchalarni mos mavzuga joylang: algoritm, API, interpretator, f-string, bool, request/response, `type()`, `input()`, snake_case, ma'lumotlar bazasi.
-- **Kutilgan natija:** Har bir tushuncha tegishli mavzu (1–6) ostida.
+- **Shart:** Quyidagi tushunchalarni mos mavzuga joylang: algoritm, API, interpretator, f-string, bool, request/response, `type()`, `input()`, snake_case, ma'lumotlar bazasi, `if/elif/else`, `and/or/not`.
+- **Kutilgan natija:** Har bir tushuncha tegishli mavzu (1–7) ostida.
 
 ### Takrorlash 2: Yagona dastur
 - **Turi:** loyiha
