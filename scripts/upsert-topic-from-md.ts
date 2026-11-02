@@ -72,7 +72,8 @@ function extractTopic(md: string, titlePrefix: string) {
   );
   if (start < 0) throw new Error(`Mavzu topilmadi: ${titlePrefix}`);
   const rest = md.slice(start);
-  const next = rest.slice(1).search(/\n# /);
+  // Faqat keyingi mavzu/sarlavha (# 8-mavzu: yoki # Qo'shimcha:) — kod izohidagi "# " emas
+  const next = rest.slice(1).search(/\n# (?:\d+-mavzu:|Qo'shimcha:)/);
   const chunk = next >= 0 ? rest.slice(0, next + 1) : rest;
 
   const titleMatch = chunk.match(/^#\s+(.+)$/m);
