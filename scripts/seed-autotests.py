@@ -706,6 +706,166 @@ SPECS: dict[str, tuple[str, str | None, TestsSpec]] = {
             ),
         ],
     ),
+    # ---- 8-mavzu: list (ro'yxat) — for ishlatilmaydi ----
+    "Mevalar ro'yxati": (
+        "CODE",
+        None,
+        [
+            (
+                "ro'yxat + len",
+                "",
+                "['olma', 'anor', 'banan']\n3",
+                [
+                    '["olma", "anor", "banan"]\n3',
+                    "['olma', 'anor', 'banan']\n3",
+                ],
+                "ANY_OF",
+                r"\[|list\s*\(",
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Birinchi va oxirgi": (
+        "CODE",
+        None,
+        [
+            (
+                "Ali / Sami",
+                "",
+                "Ali\nSami",
+                [],
+                "FLEXIBLE",
+                r"\[",
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Savatga qo'sh": (
+        "CODE",
+        INPUT_NOTE,
+        [
+            (
+                "tuxum qo'shish",
+                "tuxum\n",
+                "['non', 'sut', 'tuxum']",
+                [
+                    '["non", "sut", "tuxum"]',
+                    "['non', 'sut', 'tuxum']",
+                ],
+                "ANY_OF",
+                r"append\s*\(",
+                1,
+                0,
+            ),
+            (
+                "choy qo'shish",
+                "choy\n",
+                "['non', 'sut', 'choy']",
+                [
+                    '["non", "sut", "choy"]',
+                    "['non', 'sut', 'choy']",
+                ],
+                "ANY_OF",
+                r"append\s*\(",
+                1,
+                1,
+            ),
+        ],
+    ),
+    "Elementni almashtir": (
+        "CODE",
+        None,
+        [
+            (
+                "indeks 1 = sariq",
+                "",
+                r"(?s).*qizil.*sariq.*ko['\u2018\u2019']?k.*",
+                [
+                    "['qizil', 'sariq', \"ko'k\"]",
+                    '["qizil", "sariq", "ko\'k"]',
+                    "['qizil', 'sariq', 'ko‘k']",
+                ],
+                "PATTERN",
+                r"\[\s*1\s*\]\s*=",
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Ro'yxatda bormi?": (
+        "CODE",
+        INPUT_NOTE,
+        [
+            (
+                "anor → Bor",
+                "anor\n",
+                "Bor",
+                [],
+                "FLEXIBLE",
+                r"\bin\b",
+                1,
+                0,
+            ),
+            (
+                "uzum → Yo'q",
+                "uzum\n",
+                "Yo'q",
+                ["Yo‘q", "Yoq"],
+                "ANY_OF",
+                r"\bin\b",
+                1,
+                1,
+            ),
+        ],
+    ),
+    "Baholar": (
+        "CODE",
+        None,
+        [
+            (
+                "len / birinchi / oxirgi",
+                "",
+                "5\n5\n4",
+                [],
+                "FLEXIBLE",
+                r"len\s*\(",
+                1,
+                0,
+            ),
+        ],
+    ),
+    'Mini loyiha: "Do\'kon savati"': (
+        "CODE",
+        INPUT_NOTE,
+        [
+            (
+                "non/sut/tuxum",
+                "non\nsut\ntuxum\n",
+                "['non', 'sut', 'tuxum']\n3\nnon\ntuxum\nAsosiy mahsulot: non",
+                [
+                    '["non", "sut", "tuxum"]\n3\nnon\ntuxum\nAsosiy mahsulot: non',
+                ],
+                "ANY_OF",
+                r"append\s*\(",
+                1,
+                0,
+            ),
+            (
+                "olma/anor/banan (no asosiy)",
+                "olma\nanor\nbanan\n",
+                "['olma', 'anor', 'banan']\n3\nolma\nbanan",
+                [
+                    '["olma", "anor", "banan"]\n3\nolma\nbanan',
+                ],
+                "ANY_OF",
+                r"append\s*\(",
+                1,
+                1,
+            ),
+        ],
+    ),
 }
 
 # "Xatoni top" dublikatlari: faqat descriptionda f-string / o'zgaruvchi nomlash

@@ -1,8 +1,8 @@
-# Python kursi: 1–7-mavzular uchun qo'shimcha materiallar
+# Python kursi: 1–8-mavzular uchun qo'shimcha materiallar
 
 ## Cursor uchun ko'rsatma
 
-Quyida o'quvchilar uchun 7 ta mavzuning qo'shimcha materiallari bor. Har bir mavzu bir xil tuzilishga ega:
+Quyida o'quvchilar uchun 8 ta mavzuning qo'shimcha materiallari bor. Har bir mavzu bir xil tuzilishga ega:
 
 1. **Qisqacha mazmun**: mavzu kartasi uchun 1–2 gap
 2. **Qo'shimcha tushuntirish**: asosiy matn
@@ -1174,7 +1174,229 @@ elif yosh > 18:
 
 ---
 
-# Qo'shimcha: umumiy takrorlash topshiriqlari (1–7-mavzular)
+# 8-mavzu: list (ro'yxat)
+
+`slug: list`
+
+## Qisqacha mazmun
+Bir nechta qiymatni bitta o'zgaruvchida saqlashni o'rganamiz: `list` yaratish, indeks, `len`, `append`, elementni o'zgartirish va `in` tekshiruvi.
+
+## Qo'shimcha tushuntirish
+
+**Nima uchun list kerak?**
+Hozirgacha har bir qiymat alohida o'zgaruvchida edi: `a = 1`, `b = 2`, `c = 3`. Ko'p narsani (mevalar, baholar, ismlar) saqlash uchun **ro'yxat** qulay: bitta nom, ichida tartibli elementlar.
+
+**Ro'yxat yaratish**
+```python
+mevalar = ["olma", "anor", "banan"]
+sonlar = [10, 20, 30]
+aralash = ["Ali", 18, True]
+bosh = []
+```
+Kvadrat qavslar `[]` ichida qiymatlar vergul bilan ajratiladi. Bo'sh ro'yxat ham mumkin.
+
+**Indeks (tartib raqami)**
+Elementlar **0** dan boshlanadi:
+```python
+mevalar = ["olma", "anor", "banan"]
+print(mevalar[0])   # olma
+print(mevalar[1])   # anor
+print(mevalar[-1])  # banan (oxirgi)
+```
+`-1` — oxirgi element. Mavjud bo'lmagan indeks (`mevalar[10]`) — `IndexError`.
+
+**Uzunlik: len()**
+```python
+mevalar = ["olma", "anor", "banan"]
+print(len(mevalar))  # 3
+```
+
+**Elementni o'zgartirish**
+```python
+mevalar = ["olma", "anor", "banan"]
+mevalar[1] = "shaftoli"
+print(mevalar)  # ['olma', 'shaftoli', 'banan']
+```
+
+**Oxiriga qo'shish: append()**
+```python
+mevalar = ["olma", "anor"]
+mevalar.append("banan")
+print(mevalar)  # ['olma', 'anor', 'banan']
+```
+
+**Bor-yo'qligi: in**
+```python
+mevalar = ["olma", "anor", "banan"]
+if "anor" in mevalar:
+    print("Bor")
+else:
+    print("Yo'q")
+```
+
+**input() bilan**
+```python
+royxat = ["kitob", "qalam"]
+yangi = input()
+royxat.append(yangi)
+print(royxat)
+print(len(royxat))
+```
+
+**Eslatma:** bu mavzuda `for` tsikli yo'q. Har bir element bilan ishlashni keyingi mavzularda o'rganamiz. Hozircha indeks, `len`, `append` va `in` yetarli.
+
+## Asosiy tushunchalar
+- **`list` (ro'yxat)**: tartibli, o'zgaruvchan qiymatlar to'plami
+- **`[]`**: ro'yxat yaratish sintaksisi
+- **Indeks**: elementning o'rni (`0` dan boshlanadi; `-1` oxirgi)
+- **`len(royxat)`**: elementlar soni
+- **`append(x)`**: oxiriga element qo'shadi
+- **`in`**: element ro'yxatda bormi?
+- **O'zgaruvchan (mutable)**: yaratilgandan keyin o'zgartirish mumkin
+
+## Kod namunalari
+
+```python
+# 1) Yaratish va chiqarish
+ismlar = ["Ali", "Vali", "Sami"]
+print(ismlar)
+print(len(ismlar))
+print(ismlar[0])
+print(ismlar[-1])
+```
+
+```python
+# 2) append + input
+savat = ["non", "sut"]
+mahsulot = input()
+savat.append(mahsulot)
+print(savat)
+```
+
+```python
+# 3) in + if
+baholar = [5, 4, 3, 5]
+ball = int(input())
+if ball in baholar:
+    print("Topildi")
+else:
+    print("Topilmadi")
+```
+
+## Tez-tez uchraydigan xatolar
+- **Indeks 1 dan deb o'ylash:** birinchi element `royxat[0]`, `royxat[1]` emas.
+- **`IndexError`:** mavjud bo'lmagan indeksga murojaat.
+- **`append` natijasini o'zgaruvchiga yozish:** `savat = savat.append(x)` — `None` bo'lib qoladi; to'g'risi `savat.append(x)`.
+- **Qavs aralashtirish:** ro'yxat `[]`, funksiya chaqiruvi `()`.
+- **Matnni list bilan solishtirish:** `"olma" == mevalar` emas; `"olma" in mevalar`.
+
+## Resurslar
+- [W3Schools: Python Lists](https://www.w3schools.com/python/python_lists.asp): qisqa misollar
+- [Python docs: Lists](https://docs.python.org/3/tutorial/introduction.html#lists): rasmiy kirish
+- [W3Schools: List Methods](https://www.w3schools.com/python/python_lists_methods.asp): `append` va boshqalar
+- [Real Python: Lists and Tuples](https://realpython.com/python-lists-tuples/): chuqurroq tushuntirish
+
+## Topshiriqlar
+
+### Topshiriq 8.1: Mevalar ro'yxati
+- **Turi:** kod
+- **Qiyinlik:** oson
+- **Shart:** `mevalar` nomli ro'yxat yarating: `olma`, `anor`, `banan`. Avval butun ro'yxatni, keyin uning uzunligini (`len`) chiqaring.
+- **Maslahat:** `print(mevalar)` va `print(len(mevalar))`.
+- **Kutilgan natija:**
+```
+['olma', 'anor', 'banan']
+3
+```
+
+### Topshiriq 8.2: Birinchi va oxirgi
+- **Turi:** kod
+- **Qiyinlik:** oson
+- **Shart:** `ismlar = ["Ali", "Vali", "Dilnoza", "Sami"]` berilgan. Birinchi ismni (`[0]`) va oxirgi ismni (`[-1]`) alohida qatorda chiqaring.
+- **Maslahat:** `print(ismlar[0])`, `print(ismlar[-1])`.
+- **Kutilgan natija:**
+```
+Ali
+Sami
+```
+
+### Topshiriq 8.3: Savatga qo'sh
+- **Turi:** kod
+- **Qiyinlik:** oson
+- **Shart:** `savat = ["non", "sut"]` dan boshlang. Foydalanuvchidan bitta mahsulot nomini (`input`) so'rang, `append` qiling, so'ng yangilangan savatni chiqaring.
+- **Maslahat:** `mahsulot = input()`; `savat.append(mahsulot)`.
+- **Kutilgan natija:** (`tuxum` kiritilsa)
+```
+['non', 'sut', 'tuxum']
+```
+
+### Topshiriq 8.4: Elementni almashtir
+- **Turi:** kod
+- **Qiyinlik:** o'rta
+- **Shart:** `ranglar = ["qizil", "yashil", "ko'k"]` berilgan. Indeks `1` dagi elementni `sariq` ga o'zgartiring va ro'yxatni chiqaring.
+- **Maslahat:** `ranglar[1] = "sariq"`.
+- **Kutilgan natija:**
+```
+['qizil', 'sariq', "ko'k"]
+```
+(yoki `ko'k` uchun bir xil ma'noli chiqish).
+
+### Topshiriq 8.5: Ro'yxatda bormi?
+- **Turi:** kod
+- **Qiyinlik:** o'rta
+- **Shart:** `mevalar = ["olma", "anor", "banan"]` berilgan. Foydalanuvchidan meva nomini so'rang. Agar u ro'yxatda bo'lsa `Bor`, aks holda `Yo'q` chiqaring.
+- **Maslahat:** `if meva in mevalar:` va `else`.
+- **Kutilgan natija:** (`anor`) `Bor`; (`uzum`) `Yo'q`.
+
+### Topshiriq 8.6: Baholar
+- **Turi:** kod
+- **Qiyinlik:** o'rta
+- **Shart:** `baholar = [5, 4, 3, 5, 4]` berilgan. Ro'yxat uzunligini, birinchi bahoni va oxirgi bahoni alohida qatorlarda chiqaring.
+- **Maslahat:** `len`, `[0]`, `[-1]`.
+- **Kutilgan natija:**
+```
+5
+5
+4
+```
+
+### Topshiriq 8.7: Xatoni top
+- **Turi:** xato qidirish
+- **Qiyinlik:** o'rta
+- **Shart:** Quyidagi kodda xatolar bor. Toping va tuzating (natija: `['Ali', 'Vali', 'Sami']` va keyingi qatorda `3`):
+```python
+ismlar = ["Ali", "Vali"]
+ismlar = ismlar.append("Sami")
+print(ismlar[1])
+print(len(ismlar))
+```
+- **Maslahat:** `append` `None` qaytaradi; butun ro'yxatni chiqaring.
+- **Kutilgan natija:**
+```python
+ismlar = ["Ali", "Vali"]
+ismlar.append("Sami")
+print(ismlar)
+print(len(ismlar))
+```
+
+### Topshiriq 8.8: Mini loyiha: "Do'kon savati"
+- **Turi:** loyiha
+- **Qiyinlik:** qiyin
+- **Shart:** Bo'sh savatdan boshlang: `savat = []`. Foydalanuvchidan ketma-ket **3 ta** mahsulot nomini so'rang (`input` ni uch marta chaqiring) va har birini `append` qiling. So'ng: (1) butun savatni, (2) mahsulotlar sonini, (3) birinchi mahsulotni, (4) oxirgi mahsulotni chiqaring. Agar birinchi mahsulot `non` bo'lsa, alohida qatorda `Asosiy mahsulot: non` ham chiqaring; aks holda bu qatorni yozmang.
+- **Maslahat:** uch marta `append`; `if savat[0] == "non":`. `for` ishlatmang.
+- **Kutilgan natija:** (`non`, `sut`, `tuxum` kiritilsa)
+```
+['non', 'sut', 'tuxum']
+3
+non
+tuxum
+Asosiy mahsulot: non
+```
+(`olma`, `anor`, `banan` kiritilsa — oxirgi `Asosiy mahsulot` qatori chiqmasin).
+
+---
+
+# Qo'shimcha: umumiy takrorlash topshiriqlari (1–8-mavzular)
 
 `slug: umumiy-takrorlash`
 
@@ -1183,8 +1405,8 @@ Bu bo'lim alohida sahifa bo'lib, barcha mavzular bo'yicha bilimni mustahkamlaydi
 ### Takrorlash 1: Mavzularni bog'la
 - **Turi:** nazariy
 - **Qiyinlik:** o'rta
-- **Shart:** Quyidagi tushunchalarni mos mavzuga joylang: algoritm, API, interpretator, f-string, bool, request/response, `type()`, `input()`, snake_case, ma'lumotlar bazasi, `if/elif/else`, `and/or/not`.
-- **Kutilgan natija:** Har bir tushuncha tegishli mavzu (1–7) ostida.
+- **Shart:** Quyidagi tushunchalarni mos mavzuga joylang: algoritm, API, interpretator, f-string, bool, request/response, `type()`, `input()`, snake_case, ma'lumotlar bazasi, `if/elif/else`, `and/or/not`, `list`, `append`, indeks.
+- **Kutilgan natija:** Har bir tushuncha tegishli mavzu (1–8) ostida.
 
 ### Takrorlash 2: Yagona dastur
 - **Turi:** loyiha
