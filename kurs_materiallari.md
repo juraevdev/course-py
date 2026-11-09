@@ -1,8 +1,8 @@
-# Python kursi: 1–8-mavzular uchun qo'shimcha materiallar
+# Python kursi: 1–9-mavzular uchun qo'shimcha materiallar
 
 ## Cursor uchun ko'rsatma
 
-Quyida o'quvchilar uchun 8 ta mavzuning qo'shimcha materiallari bor. Har bir mavzu bir xil tuzilishga ega:
+Quyida o'quvchilar uchun 9 ta mavzuning qo'shimcha materiallari bor. Har bir mavzu bir xil tuzilishga ega:
 
 1. **Qisqacha mazmun**: mavzu kartasi uchun 1–2 gap
 2. **Qo'shimcha tushuntirish**: asosiy matn
@@ -1396,7 +1396,217 @@ Asosiy mahsulot: non
 
 ---
 
-# Qo'shimcha: umumiy takrorlash topshiriqlari (1–8-mavzular)
+# 9-mavzu: tuple (kortej)
+
+`slug: tuple`
+
+## Qisqacha mazmun
+Bir nechta qiymatni tartibli va **o'zgarmas** ko'rinishda saqlashni o'rganamiz: `tuple` yaratish, indeks, `len`, `in` tekshiruvi va `list` bilan farqi.
+
+## Qo'shimcha tushuntirish
+
+**Nima uchun tuple kerak?**
+`list` kabi bir nechta qiymatni bitta o'zgaruvchida saqlaydi. Farqi shundaki, tuple yaratilgach **o'zgartirib bo'lmaydi** (immutable). Masalan, tug'ilgan sana `(2008, 5, 12)` yoki GPS koordinata `(41.31, 69.24)` kabi ma'lumotlar odatda tuple da saqlanadi — qadrsiz o'zgarish bo'lmasligi kerak.
+
+**Tuple yaratish**
+```python
+sana = (2008, 5, 12)
+nuqta = (41.31, 69.24)
+bitta = (42,)          # bitta element — vergul muhim
+ikkita = 10, 20        # qavssiz ham tuple (packing)
+bo_sh = ()
+```
+Oddiy qavslar `()` ichida qiymatlar vergul bilan ajratiladi. Bitta elementli tuple da oxirida **vergul** qoldiring: `(42,)`, aks holda bu oddiy `int` bo'ladi.
+
+**Indeks va len**
+`list` dagi kabi indeks `0` dan boshlanadi:
+```python
+sana = (2008, 5, 12)
+print(sana[0])   # 2008
+print(sana[-1])  # 12
+print(len(sana)) # 3
+```
+
+**O'zgartirish mumkin emas**
+```python
+sana = (2008, 5, 12)
+# sana[1] = 6  # TypeError — tuple o'zgarmaydi
+```
+
+**append yo'q**
+Tuple ga element qo'shib bo'lmaydi. Yangi qiymatlar kerak bo'lsa, yangi tuple yarating yoki `list` dan foydalaning.
+
+**Bor-yo'qligi: in**
+```python
+ranglar = ("qizil", "yashil", "ko'k")
+if "sariq" in ranglar:
+    print("Bor")
+else:
+    print("Yo'q")
+```
+
+**Unpacking (qisqa tanishuv)**
+```python
+kun, oy, yil = (12, 5, 2008)
+print(kun, oy, yil)  # 12 5 2008
+```
+Qiymatlarni alohida o'zgaruvchilarga ajratish mumkin. Bu mavzuda asosan o'qish va oddiy misollar yetarli.
+
+**list va tuple solishtirish**
+| | `list` | `tuple` |
+|---|--------|---------|
+| Sintaksis | `[]` | `()` |
+| O'zgartirish | mumkin (`append`, indeks bilan) | mumkin emas |
+| Qachon tanlash | ma'lumot o'zgarishi kerak bo'lsa | ma'lumot doimiy bo'lsa |
+
+**Eslatma:** bu mavzuda `for` tsikli yo'q. Indeks, `len`, `in` va tuple yaratish yetarli.
+
+## Asosiy tushunchalar
+- **`tuple` (kortej)**: tartibli, o'zgarmas qiymatlar to'plami
+- **`()`**: tuple yaratish sintaksisi
+- **Indeks**: elementning o'rni (`0` dan; `-1` oxirgi)
+- **`len(tuple)`**: elementlar soni
+- **`in`**: element tuple da bormi?
+- **Immutable (o'zgarmas)**: yaratilgandan keyin ichidagi qiymatlar o'zgartirilmaydi
+- **Packing / unpacking**: qiymatlarni tuple ga yig'ish va qaytadan ajratish
+
+## Kod namunalari
+
+```python
+# 1) Yaratish va chiqarish
+manzil = ("Toshkent", "Chilonzor", 15)
+print(manzil)
+print(len(manzil))
+print(manzil[0])
+print(manzil[-1])
+```
+
+```python
+# 2) in + if
+kunlar = ("dushanba", "seshanba", "chorshanba")
+kun = input()
+if kun in kunlar:
+    print("Ish kuni")
+else:
+    print("Boshqa kun")
+```
+
+```python
+# 3) list vs tuple
+sonlar_list = [1, 2, 3]
+sonlar_list.append(4)
+sonlar_tuple = (1, 2, 3)
+# sonlar_tuple.append(4)  # AttributeError
+print(sonlar_list)
+print(sonlar_tuple)
+```
+
+## Tez-tez uchraydigan xatolar
+- **Bitta element:** `(5)` — bu `int`; `(5,)` — tuple.
+- **`TypeError` indeks bilan o'zgartirish:** `t[0] = 1` tuple da ishlamaydi.
+- **`append` chaqirish:** tuple da bunday metod yo'q.
+- **Qavs aralashtirish:** tuple `()`, funksiya `()`.
+- **`list` va tuple ni `==` bilan to'g'ridan-to'g'ri solishtirish:** `[1, 2] == (1, 2)` — `False` (turlari boshqa).
+
+## Resurslar
+- [W3Schools: Python Tuples](https://www.w3schools.com/python/python_tuples.asp): qisqa misollar
+- [Python docs: Tuples](https://docs.python.org/3/tutorial/datastructures.html#tuples-and-sequences): rasmiy tushuntirish
+- [Real Python: Lists and Tuples](https://realpython.com/python-lists-tuples/): list bilan birga taqqoslash
+- [Programiz: Python Tuple](https://www.programiz.com/python-programming/tuple): boshlang'ich uchun
+
+## Topshiriqlar
+
+### Topshiriq 9.1: Sana tuple
+- **Turi:** kod
+- **Qiyinlik:** oson
+- **Shart:** `tugilgan_sana = (2010, 3, 25)` berilgan. Butun tuplen, uzunligini va ikkinchi elementini (oy) chiqaring.
+- **Maslahat:** `print(tugilgan_sana)`, `len`, `[1]`.
+- **Kutilgan natija:**
+```
+(2010, 3, 25)
+3
+3
+```
+
+### Topshiriq 9.2: Birinchi va oxirgi
+- **Turi:** kod
+- **Qiyinlik:** oson
+- **Shart:** `ranglar = ("qizil", "yashil", "ko'k", "sariq")` berilgan. Birinchi va oxirgi rangni alohida qatorlarda chiqaring.
+- **Maslahat:** `[0]` va `[-1]`.
+- **Kutilgan natija:**
+```
+qizil
+sariq
+```
+
+### Topshiriq 9.3: Tuplen ichida bormi?
+- **Turi:** kod
+- **Qiyinlik:** oson
+- **Shart:** `shaharlar = ("Toshkent", "Samarqand", "Buxoro")` berilgan. Foydalanuvchidan shahar nomini so'rang. Tuplen ichida bo'lsa `Bor`, aks holda `Yo'q` chiqaring.
+- **Maslahat:** `if shahar in shaharlar:`.
+- **Kutilgan natija:** (`Samarqand`) `Bor`; (`Farg'ona`) `Yo'q`.
+
+### Topshiriq 9.4: Unpacking
+- **Turi:** kod
+- **Qiyinlik:** o'rta
+- **Shart:** `ism_yosh = ("Dilnoza", 16)` berilgan. Uni `ism` va `yosh` o'zgaruvchilariga ajrating va bitta qatorda `Ism: Dilnoza, yosh: 16` formatida chiqaring (f-string).
+- **Maslahat:** `ism, yosh = ism_yosh`.
+- **Kutilgan natija:**
+```
+Ism: Dilnoza, yosh: 16
+```
+
+### Topshiriq 9.5: list yoki tuple?
+- **Turi:** nazariy
+- **Qiyinlik:** o'rta
+- **Shart:** Quyidagi vaziyatlarda `list` yoki `tuple` tanlang va bitta gap bilan izoh bering: (1) o'quvchi baholarini yig'ish va yangi baho qo'shish; (2) tug'ilgan sana (kun, oy, yil); (3) xarid savati mahsulotlari (har safar yangi mahsulot qo'shiladi).
+- **Maslahat:** O'zgaradigan ma'lumot — `list`, doimiy — `tuple`.
+- **Kutilgan natija:** (1) list — append kerak; (2) tuple — sana o'zgarmaydi; (3) list — savat o'zgaradi.
+
+### Topshiriq 9.6: Koordinata
+- **Turi:** kod
+- **Qiyinlik:** o'rta
+- **Shart:** `nuqta = (41.31, 69.28)` berilgan. Birinchi qiymatni `Kenglik`, ikkinchisini `Uzunlik` deb nomlangan o'zgaruvchilarga ajrating va `Kenglik: 41.31, Uzunlik: 69.28` chiqaring.
+- **Maslahat:** unpacking.
+- **Kutilgan natija:**
+```
+Kenglik: 41.31, Uzunlik: 69.28
+```
+
+### Topshiriq 9.7: Xatoni top
+- **Turi:** xato qidirish
+- **Qiyinlik:** o'rta
+- **Shart:** Quyidagi kodda xatolar bor. Toping va tuzating (natija: `3` va keyingi qatorda `olma`):
+```python
+mevalar = ("olma", "anor")
+mevalar.append("banan")
+print(len(mevalar))
+print(mevalar[0])
+```
+- **Maslahat:** tuple o'zgarmaydi; to'g'ri qiymatlar bilan yangi tuple yarating.
+- **Kutilgan natija:**
+```python
+mevalar = ("olma", "anor", "banan")
+print(len(mevalar))
+print(mevalar[0])
+```
+
+### Topshiriq 9.8: Mini loyiha: "Talaba kartochkasi"
+- **Turi:** loyiha
+- **Qiyinlik:** qiyin
+- **Shart:** Foydalanuvchidan ism (`str`), yosh (`int`) va sinf (`str`) so'rang. Ularni `talaba = (ism, yosh, sinf)` ko'rinishida tuple ga yig'ing. So'ng chiqaring: (1) butun kartochka, (2) elementlar soni, (3) ism (`[0]`), (4) yosh 18 dan katta yoki kichik: agar `yosh >= 18` bo'lsa `Voyaga yetgan`, aks holda `Voyaga yetmagan`. `for` ishlatmang.
+- **Maslahat:** `int(input())`, tuple packing, `if` va indeks.
+- **Kutilgan natija:** (Sami, 17, 9-A kiritilsa)
+```
+('Sami', 17, '9-A')
+3
+Sami
+Voyaga yetmagan
+```
+
+---
+
+# Qo'shimcha: umumiy takrorlash topshiriqlari (1–9-mavzular)
 
 `slug: umumiy-takrorlash`
 
@@ -1405,8 +1615,8 @@ Bu bo'lim alohida sahifa bo'lib, barcha mavzular bo'yicha bilimni mustahkamlaydi
 ### Takrorlash 1: Mavzularni bog'la
 - **Turi:** nazariy
 - **Qiyinlik:** o'rta
-- **Shart:** Quyidagi tushunchalarni mos mavzuga joylang: algoritm, API, interpretator, f-string, bool, request/response, `type()`, `input()`, snake_case, ma'lumotlar bazasi, `if/elif/else`, `and/or/not`, `list`, `append`, indeks.
-- **Kutilgan natija:** Har bir tushuncha tegishli mavzu (1–8) ostida.
+- **Shart:** Quyidagi tushunchalarni mos mavzuga joylang: algoritm, API, interpretator, f-string, bool, request/response, `type()`, `input()`, snake_case, ma'lumotlar bazasi, `if/elif/else`, `and/or/not`, `list`, `append`, indeks, `tuple`, immutable, unpacking.
+- **Kutilgan natija:** Har bir tushuncha tegishli mavzu (1–9) ostida.
 
 ### Takrorlash 2: Yagona dastur
 - **Turi:** loyiha
