@@ -1,8 +1,8 @@
-# Python kursi: 1–9-mavzular uchun qo'shimcha materiallar
+# Python kursi: 1–10-mavzular uchun qo'shimcha materiallar
 
 ## Cursor uchun ko'rsatma
 
-Quyida o'quvchilar uchun 9 ta mavzuning qo'shimcha materiallari bor. Har bir mavzu bir xil tuzilishga ega:
+Quyida o'quvchilar uchun 10 ta mavzuning qo'shimcha materiallari bor. Har bir mavzu bir xil tuzilishga ega:
 
 1. **Qisqacha mazmun**: mavzu kartasi uchun 1–2 gap
 2. **Qo'shimcha tushuntirish**: asosiy matn
@@ -1606,7 +1606,232 @@ Voyaga yetmagan
 
 ---
 
-# Qo'shimcha: umumiy takrorlash topshiriqlari (1–9-mavzular)
+# 10-mavzu: set (to'plam)
+
+`slug: set`
+
+## Qisqacha mazmun
+Takrorlanmas qiymatlarni saqlash uchun `set` dan foydalanamiz: yaratish, `add`, `remove`/`discard`, `in`, `len` va `list` bilan farq.
+
+## Qo'shimcha tushuntirish
+
+**Nima uchun set kerak?**
+Ba'zan bizga **tartib muhim emas**, lekin har bir qiymat **faqat bir marta** bo'lishi kerak: masalan, kursga yozilgan noyob ismlar, bir kunda tashrif buyurgan foydalanuvchilar, takrorlanmas teglar ro'yxati. `list` da `["olma", "olma", "anor"]` ikkita `olma` bo'lishi mumkin; `set` da bular bitta `olma` ga aylanadi.
+
+**Set yaratish**
+```python
+mevalar = {"olma", "anor", "banan"}
+sonlar = set([1, 2, 2, 3])   # list dan — takrorlar tashlanadi
+bo_sh = set()                # bo'sh set ({} emas!)
+bitta = {42}                 # bitta elementli set
+```
+`{}` bo'sh **lug'at** (dict) yaratadi; bo'sh set faqat `set()` bilan.
+
+**Takrorlar avtomatik olib tashlanadi**
+```python
+raqamlar = {1, 2, 2, 3, 3, 3}
+print(raqamlar)   # tartib har safar boshqacha bo'lishi mumkin, masalan {1, 2, 3}
+print(len(raqamlar))  # 3
+```
+
+**Indeks yo'q**
+Set da `element[0]` kabi indeks ishlatilmaydi — tartib kafolatlanmaydi va pozitsiya tushunchasi yo'q. Elementni tekshirish uchun `in`, o'zgartirish uchun metodlar ishlatiladi.
+
+**Element qo'shish: add()**
+```python
+mevalar = {"olma", "anor"}
+mevalar.add("banan")
+mevalar.add("olma")   # bor — o'zgarmaydi
+print(mevalar)
+print(len(mevalar))     # 3
+```
+
+**O'chirish: remove() va discard()**
+```python
+mevalar = {"olma", "anor", "banan"}
+mevalar.discard("anor")      # yo'q bo'lsa ham xato bermaydi
+mevalar.remove("olma")       # yo'q bo'lsa KeyError
+# mevalar.remove("uzum")     # KeyError
+```
+
+**Bor-yo'qligi: in**
+```python
+teglar = {"python", "dasturlash", "kurs"}
+if "python" in teglar:
+    print("Bor")
+else:
+    print("Yo'q")
+```
+
+**list, tuple va set solishtirish**
+| | `list` | `tuple` | `set` |
+|---|--------|---------|-------|
+| Sintaksis | `[]` | `()` | `{}` yoki `set()` |
+| Tartib | bor | bor | indeks yo'q |
+| Takror | mumkin | mumkin | mumkin emas |
+| O'zgartirish | `append`, indeks | mumkin emas | `add`, `remove` |
+
+**List dan noyob elementlar**
+```python
+baholar = [5, 4, 5, 3, 4, 5]
+noyob = set(baholar)
+print(noyob)
+print(len(noyob))   # 3
+```
+
+**Eslatma:** bu mavzuda `for` tsikli yo'q. `add`, `discard`, `remove`, `in`, `len` va set yaratish yetarli. Birlashtirish (`union`) va kesishish (`intersection`) keyingi mavzularda.
+
+## Asosiy tushunchalar
+- **`set` (to'plam)**: tartibsiz, takrorlanmas, o'zgaruvchan qiymatlar to'plami
+- **`{}` / `set()`**: set yaratish (`bo'sh` uchun faqat `set()`)
+- **`add(x)`**: element qo'shadi (takror qo'shilmaydi)
+- **`remove(x)`**: elementni o'chiradi; yo'q bo'lsa `KeyError`
+- **`discard(x)`**: elementni o'chiradi; yo'q bo'lsa jim o'tadi
+- **`in`**: element setda bormi?
+- **`len(set)`**: noyob elementlar soni
+- **Noyoblik (uniqueness)**: har bir qiymat ko'pi bilan bir marta
+
+## Kod namunalari
+
+```python
+# 1) Yaratish va uzunlik
+fakultetlar = {"IT", "matematika", "fizika"}
+print(fakultetlar)
+print(len(fakultetlar))
+```
+
+```python
+# 2) add + in
+savat = set()
+savat.add("non")
+savat.add("sut")
+savat.add("non")
+print(savat)
+if "sut" in savat:
+    print("Savatda sut bor")
+```
+
+```python
+# 3) list takrorlarini tozalash
+kitob_idlari = [101, 102, 101, 103, 102]
+noyob_idlar = set(kitob_idlari)
+print(noyob_idlar)
+print(len(noyob_idlar))
+```
+
+## Tez-tez uchraydigan xatolar
+- **Bo'sh `{}`:** bu `dict`, set emas — `set()` ishlating.
+- **Indeks bilan murojaat:** `s[0]` — `TypeError`.
+- **`remove` mavjud bo'lmagan elementda:** `KeyError`; xavfsizroq `discard`.
+- **`add` natijasini qayta tayinlash:** `s = s.add(x)` — `None`; `s.add(x)` yetarli.
+- **Tartibga ishonish:** set chiqish tartibi barqaror deb o'ylamang; indeks o'rniga `in` va `len`.
+
+## Resurslar
+- [W3Schools: Python Sets](https://www.w3schools.com/python/python_sets.asp): qisqa misollar
+- [Python docs: Sets](https://docs.python.org/3/tutorial/datastructures.html#sets): rasmiy tushuntirish
+- [Programiz: Python Set](https://www.programiz.com/python-programming/set): boshlang'ich uchun
+- [Real Python: Sets in Python](https://realpython.com/python-sets/): chuqurroq qo'llanma
+
+## Topshiriqlar
+
+### Topshiriq 10.1: Mevalar to'plami
+- **Turi:** kod
+- **Qiyinlik:** oson
+- **Shart:** `mevalar = {"olma", "anor", "banan"}` berilgan. Butun setni va uning uzunligini chiqaring.
+- **Maslahat:** `print(mevalar)`, `print(len(mevalar))`.
+- **Kutilgan natija:**
+```
+{'olma', 'anor', 'banan'}
+3
+```
+(chiqish tartibi farq qilishi mumkin).
+
+### Topshiriq 10.2: Takror yo'q
+- **Turi:** kod
+- **Qiyinlik:** oson
+- **Shart:** `sonlar = {1, 2, 2, 3, 3, 3}` yarating. Setni va uzunligini chiqaring.
+- **Maslahat:** Python takrorlarni avtomatik olib tashlaydi.
+- **Kutilgan natija:**
+```
+{1, 2, 3}
+3
+```
+(tartib o'zgarishi mumkin).
+
+### Topshiriq 10.3: Setda bormi?
+- **Turi:** kod
+- **Qiyinlik:** oson
+- **Shart:** `shaharlar = {"Toshkent", "Samarqand", "Buxoro"}` berilgan. Foydalanuvchidan shahar nomini so'rang. Set ichida bo'lsa `Bor`, aks holda `Yo'q` chiqaring.
+- **Maslahat:** `if shahar in shaharlar:`.
+- **Kutilgan natija:** (`Samarqand`) `Bor`; (`Farg'ona`) `Yo'q`.
+
+### Topshiriq 10.4: add bilan kengaytirish
+- **Turi:** kod
+- **Qiyinlik:** o'rta
+- **Shart:** `tillar = {"python", "javascript"}` dan boshlang. `add` bilan avval `python` (takror), keyin `go` qo'shing. So'ng butun set va `len` ni chiqaring.
+- **Maslahat:** takror `add` uzunlikni oshirmaydi.
+- **Kutilgan natija:**
+```
+{'python', 'javascript', 'go'}
+3
+```
+(tartib o'zgarishi mumkin).
+
+### Topshiriq 10.5: list, tuple yoki set?
+- **Turi:** nazariy
+- **Qiyinlik:** o'rta
+- **Shart:** Quyida qaysi tuzilma mos va nega (bitta gap): (1) o'quvchi baholari ro'yxati (5, 4, 3 tartib bilan yozish kerak); (2) saytga bir kunda kirgan **noyob** foydalanuvchi ID lari; (3) GPS nuqtasi (kenglik, uzunlik) o'zgarmasligi kerak; (4) xarid savatidagi mahsulotlar (har safar yangi mahsulot qo'shiladi).
+- **Maslahat:** tartib va takror talablariga qarang.
+- **Kutilgan natija:** (1) list; (2) set; (3) tuple; (4) list.
+
+### Topshiriq 10.6: discard
+- **Turi:** kod
+- **Qiyinlik:** o'rta
+- **Shart:** `ranglar = {"qizil", "yashil", "ko'k", "sariq"}` berilgan. `discard` bilan `yashil` va mavjud bo'lmagan `qora` ni o'chirib ko'ring. So'ng set va uzunligini chiqaring.
+- **Maslahat:** `discard` xato bermaydi.
+- **Kutilgan natija:**
+```
+{'qizil', "ko'k", 'sariq'}
+3
+```
+(tartib o'zgarishi mumkin).
+
+### Topshiriq 10.7: Xatoni top
+- **Turi:** xato qidirish
+- **Qiyinlik:** o'rta
+- **Shart:** Quyidagi kodda xatolar bor. Toping va tuzating (natija: `3` va keyin `True`):
+```python
+mevalar = {}
+mevalar.add("olma")
+mevalar.add("anor")
+print(len(mevalar))
+print("olma" in mevalar)
+```
+- **Maslahat:** bo'sh set `set()`; `{}` dict.
+- **Kutilgan natija:**
+```python
+mevalar = set()
+mevalar.add("olma")
+mevalar.add("anor")
+print(len(mevalar))
+print("olma" in mevalar)
+```
+
+### Topshiriq 10.8: Mini loyiha: "Ishtirokchilar ro'yxati"
+- **Turi:** loyiha
+- **Qiyinlik:** qiyin
+- **Shart:** `ishtirokchilar = set()` dan boshlang. Foydalanuvchidan ketma-ket **uch marta** ism so'rang (`input`). Har birini `add` qiling (bir xil ism qayta kiritilsa, set bir xil qoladi). So'ng chiqaring: (1) butun set, (2) noyob ishtirokchilar soni, (3) agar `"Ali"` setda bo'lsa `Ali bor`, aks holda `Ali yo'q`. `for` ishlatmang.
+- **Maslahat:** uch marta `input` va `add`; `if "Ali" in ishtirokchilar:`.
+- **Kutilgan natija:** (`Ali`, `Vali`, `Ali` kiritilsa)
+```
+{'Ali', 'Vali'}
+2
+Ali bor
+```
+
+---
+
+# Qo'shimcha: umumiy takrorlash topshiriqlari (1–10-mavzular)
 
 `slug: umumiy-takrorlash`
 
@@ -1615,8 +1840,8 @@ Bu bo'lim alohida sahifa bo'lib, barcha mavzular bo'yicha bilimni mustahkamlaydi
 ### Takrorlash 1: Mavzularni bog'la
 - **Turi:** nazariy
 - **Qiyinlik:** o'rta
-- **Shart:** Quyidagi tushunchalarni mos mavzuga joylang: algoritm, API, interpretator, f-string, bool, request/response, `type()`, `input()`, snake_case, ma'lumotlar bazasi, `if/elif/else`, `and/or/not`, `list`, `append`, indeks, `tuple`, immutable, unpacking.
-- **Kutilgan natija:** Har bir tushuncha tegishli mavzu (1–9) ostida.
+- **Shart:** Quyidagi tushunchalarni mos mavzuga joylang: algoritm, API, interpretator, f-string, bool, request/response, `type()`, `input()`, snake_case, ma'lumotlar bazasi, `if/elif/else`, `and/or/not`, `list`, `append`, indeks, `tuple`, immutable, unpacking, `set`, `add`, `discard`, noyoblik.
+- **Kutilgan natija:** Har bir tushuncha tegishli mavzu (1–10) ostida.
 
 ### Takrorlash 2: Yagona dastur
 - **Turi:** loyiha
