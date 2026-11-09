@@ -866,6 +866,123 @@ SPECS: dict[str, tuple[str, str | None, TestsSpec]] = {
             ),
         ],
     ),
+    # ---- 10-mavzu: set (to'plam) — chiqish tartibi barqaror emas ----
+    "Mevalar to'plami": (
+        "CODE",
+        None,
+        [
+            (
+                "set + len=3",
+                "",
+                r"(?s)(?=.*\bolma\b)(?=.*\banor\b)(?=.*\bbanan\b).*\n3\s*\Z",
+                [],
+                "PATTERN",
+                r"\{|set\s*\(",
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Takror yo'q": (
+        "CODE",
+        None,
+        [
+            (
+                "noyob {1,2,3} + len",
+                "",
+                r"(?s)(?=.*\b1\b)(?=.*\b2\b)(?=.*\b3\b).*\n3\s*\Z",
+                [],
+                "PATTERN",
+                r"\{|set\s*\(",
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Setda bormi?": (
+        "CODE",
+        INPUT_NOTE,
+        [
+            (
+                "Samarqand → Bor",
+                "Samarqand\n",
+                "Bor",
+                [],
+                "FLEXIBLE",
+                r"\bin\b",
+                1,
+                0,
+            ),
+            (
+                "Farg'ona → Yo'q",
+                "Farg'ona\n",
+                "Yo'q",
+                ["Yo‘q", "Yoq"],
+                "ANY_OF",
+                r"\bin\b",
+                1,
+                1,
+            ),
+        ],
+    ),
+    "add bilan kengaytirish": (
+        "CODE",
+        None,
+        [
+            (
+                "python/javascript/go + len=3",
+                "",
+                r"(?s)(?=.*\bpython\b)(?=.*\bjavascript\b)(?=.*\bgo\b).*\n3\s*\Z",
+                [],
+                "PATTERN",
+                r"\.add\s*\(",
+                1,
+                0,
+            ),
+        ],
+    ),
+    "discard": (
+        "CODE",
+        None,
+        [
+            (
+                "yashil o'chirildi, len=3",
+                "",
+                r"(?s)(?=.*\bqizil\b)(?=.*ko['\u2018\u2019']?k)(?=.*\bsariq\b)(?!.*\byashil\b).*\n3\s*\Z",
+                [],
+                "PATTERN",
+                r"\.discard\s*\(",
+                1,
+                0,
+            ),
+        ],
+    ),
+    'Mini loyiha: "Ishtirokchilar ro\'yxati"': (
+        "CODE",
+        INPUT_NOTE,
+        [
+            (
+                "Ali/Vali/Ali → Ali bor",
+                "Ali\nVali\nAli\n",
+                r"(?s)(?=.*\bAli\b)(?=.*\bVali\b).*\n2\nAli bor\s*\Z",
+                [],
+                "PATTERN",
+                r"\.add\s*\(",
+                1,
+                0,
+            ),
+            (
+                "Vali/Sami/Dilnoza → Ali yo'q",
+                "Vali\nSami\nDilnoza\n",
+                r"(?s)(?=.*\bVali\b)(?=.*\bSami\b)(?=.*\bDilnoza\b).*\n3\nAli yo['\u2018\u2019']?q\s*\Z",
+                [],
+                "PATTERN",
+                r"\.add\s*\(",
+                1,
+                1,
+            ),
+        ],
+    ),
 }
 
 # "Xatoni top" dublikatlari: faqat descriptionda f-string / o'zgaruvchi nomlash
