@@ -1,8 +1,8 @@
-# Python kursi: 1–10-mavzular uchun qo'shimcha materiallar
+# Python kursi: 1–11-mavzular uchun qo'shimcha materiallar
 
 ## Cursor uchun ko'rsatma
 
-Quyida o'quvchilar uchun 10 ta mavzuning qo'shimcha materiallari bor. Har bir mavzu bir xil tuzilishga ega:
+Quyida o'quvchilar uchun 11 ta mavzuning qo'shimcha materiallari bor. Har bir mavzu bir xil tuzilishga ega:
 
 1. **Qisqacha mazmun**: mavzu kartasi uchun 1–2 gap
 2. **Qo'shimcha tushuntirish**: asosiy matn
@@ -18,6 +18,7 @@ Saytga joylashda:
 - Kod bloklari sintaksis ranglanishi bilan ko'rsatilsin va yonida "Nusxalash" tugmasi bo'lsin.
 - "Maslahat" va "Kutilgan natija" bloklari boshida yopiq turib, tugma bosilganda ochilsin.
 - Matnni o'zgartirmasdan, faqat tuzilishga joylashtiring.
+- **Kutilgan natija** to'liq javob yoki tayyor kod bo'lmasin: kod topshiriqlarida faqat namuna chiqish (I/O), nazariy/xato topishda esa tekshiruv mezonlari yozilsin.
 
 ---
 
@@ -1831,7 +1832,249 @@ Ali bor
 
 ---
 
-# Qo'shimcha: umumiy takrorlash topshiriqlari (1–10-mavzular)
+# 11-mavzu: dict (lug'at)
+
+`slug: dict`
+
+## Qisqacha mazmun
+Kalit–qiymat juftliklarini `dict` da saqlashni o'rganamiz: yaratish, kalit bo'yicha o'qish/yozish, `in`, `get`, `len` va list/set bilan farq.
+
+## Qo'shimcha tushuntirish
+
+**Nima uchun dict kerak?**
+`list` da qiymatni **indeks** (0, 1, 2…) bilan topamiz. Ba'zan esa nom bilan qidirish qulayroq: `"ism" → "Ali"`, `"yosh" → 17`. Bunday juftliklar uchun **lug'at (`dict`)** ishlatiladi.
+
+**Dict yaratish**
+```python
+talaba = {
+    "ism": "Ali",
+    "yosh": 17,
+    "shahar": "Toshkent",
+}
+bosh = {}                 # bo'sh dict
+bosh2 = dict()            # shuningdek bo'sh dict
+```
+Kalit odatda `str` (matn). Qiymat `str`, `int`, `bool` yoki boshqa tur bo'lishi mumkin.
+
+**Eslatma:** `{1, 2, 3}` — bu **set**. `{"a": 1}` — bu **dict**. Farq: dict da `kalit: qiymat` bor.
+
+**Kalit bo'yicha o'qish**
+```python
+talaba = {"ism": "Ali", "yosh": 17}
+print(talaba["ism"])    # Ali
+print(talaba["yosh"])   # 17
+# print(talaba["telefon"])  # KeyError — bunday kalit yo'q
+```
+
+**Qiymat yozish / yangilash**
+```python
+talaba = {"ism": "Ali", "yosh": 17}
+talaba["yosh"] = 18           # mavjud kalitni yangilaydi
+talaba["telefon"] = "901112233"  # yangi kalit qo'shadi
+print(talaba)
+```
+
+**Kalit bormi: in**
+```python
+talaba = {"ism": "Ali", "yosh": 17}
+if "ism" in talaba:
+    print("Kalit bor")
+else:
+    print("Kalit yo'q")
+```
+`in` dict da **kalitni** tekshiradi (qiymatni emas).
+
+**Xavfsiz o'qish: get()**
+```python
+talaba = {"ism": "Ali", "yosh": 17}
+print(talaba.get("ism"))              # Ali
+print(talaba.get("telefon"))          # None (xato emas)
+print(talaba.get("telefon", "yo'q"))  # yo'q — default qiymat
+```
+
+**Uzunlik: len()**
+```python
+talaba = {"ism": "Ali", "yosh": 17, "shahar": "Toshkent"}
+print(len(talaba))  # 3 — juftliklar soni
+```
+
+**Qisqa solishtirish**
+| | `list` | `set` | `dict` |
+|---|--------|-------|--------|
+| Qanday qidiriladi | indeks | `in` (element) | kalit |
+| Juftlik | yo'q | yo'q | kalit → qiymat |
+| Misol | `["Ali", 17]` | `{"Ali"}` | `{"ism": "Ali"}` |
+
+**Eslatma:** bu mavzuda `for` yo'q. Kalit bilan `[]`, `get`, `in`, `len` yetarli.
+
+## Asosiy tushunchalar
+- **`dict` (lug'at)**: kalit–qiymat juftliklari to'plami
+- **Kalit (key)**: qiymatni topish uchun nom (`"ism"`, `"yosh"`)
+- **Qiymat (value)**: kalitga bog'langan ma'lumot
+- **`d[kalit]`**: o'qish yoki yozish (`KeyError` bo'lishi mumkin)
+- **`d.get(kalit, default)`**: xavfsiz o'qish
+- **`in`**: kalit dict ichida bormi?
+- **`len(d)`**: juftliklar soni
+
+## Kod namunalari
+
+```python
+# 1) Yaratish va o'qish
+kontakt = {"ism": "Dilnoza", "tel": "901112233"}
+print(kontakt)
+print(kontakt["ism"])
+print(len(kontakt))
+```
+
+```python
+# 2) Yangilash + input
+profil = {"ism": "Ali", "yosh": 17}
+yangi_yosh = int(input())
+profil["yosh"] = yangi_yosh
+print(profil["yosh"])
+```
+
+```python
+# 3) in + get
+mahsulot = {"nomi": "non", "narx": 4000}
+kalit = input()
+if kalit in mahsulot:
+    print(mahsulot[kalit])
+else:
+    print(mahsulot.get(kalit, "Topilmadi"))
+```
+
+## Tez-tez uchraydigan xatolar
+- **Set bilan aralashtirish:** `{"a", "b"}` set; `{"a": 1}` dict.
+- **`KeyError`:** yo'q kalitga `d["x"]` — avval `in` yoki `get` ishlating.
+- **`in` qiymatni emas, kalitni tekshiradi:** `"Ali" in talaba` odatda `False` (agar kalit `"Ali"` bo'lmasa).
+- **Kalit sifatida list:** list kalit bo'la olmaydi; matn/son ishlating.
+- **Bo'sh qavs chalkashligi:** `{}` bo'sh **dict**; bo'sh set esa `set()`.
+
+## Resurslar
+- [W3Schools: Python Dictionaries](https://www.w3schools.com/python/python_dictionaries.asp): qisqa misollar
+- [Python docs: Dictionaries](https://docs.python.org/3/tutorial/datastructures.html#dictionaries): rasmiy kirish
+- [Programiz: Python Dictionary](https://www.programiz.com/python-programming/dictionary): boshlang'ich uchun
+- [Real Python: Dictionaries in Python](https://realpython.com/python-dicts/): chuqurroq qo'llanma
+
+## Topshiriqlar
+
+### Topshiriq 11.1: Talaba lug'ati
+- **Turi:** kod
+- **Qiyinlik:** oson
+- **Shart:**
+  1. `talaba` nomli dict yarating.
+  2. Unda uchta juftlik bo'lsin: `"ism" → "Ali"`, `"yosh" → 17`, `"shahar" → "Toshkent"`.
+  3. Avval butun dict ni, keyin `len(talaba)` ni chiqaring.
+- **Maslahat:** qiymatlar orasida vergul; kalitlar qo'shtirnoqda.
+- **Kutilgan natija:** (namuna chiqish)
+```
+{'ism': 'Ali', 'yosh': 17, 'shahar': 'Toshkent'}
+3
+```
+
+### Topshiriq 11.2: Kalit bo'yicha o'qish
+- **Turi:** kod
+- **Qiyinlik:** oson
+- **Shart:**
+  1. Berilgan: `kitob = {"nomi": "Python asoslari", "muallif": "Ali", "yil": 2024}`.
+  2. Faqat `"nomi"` kalitidagi qiymatni chiqaring.
+  3. Keyingi qatorda `"yil"` kalitidagi qiymatni chiqaring.
+- **Maslahat:** `kitob["nomi"]` va `kitob["yil"]`.
+- **Kutilgan natija:** (namuna chiqish)
+```
+Python asoslari
+2024
+```
+
+### Topshiriq 11.3: Yangi maydon qo'sh
+- **Turi:** kod
+- **Qiyinlik:** oson
+- **Shart:**
+  1. Boshlang'ich: `talaba = {"ism": "Sami", "yosh": 16}`.
+  2. Foydalanuvchidan bitta matn so'rang (`input`) — bu telefon raqami.
+  3. Uni `"telefon"` kaliti bilan dict ga yozing.
+  4. Yangilangan dict ni chiqaring.
+- **Maslahat:** `talaba["telefon"] = ...`
+- **Kutilgan natija:** (`901112233` kiritilsa, namuna)
+```
+{'ism': 'Sami', 'yosh': 16, 'telefon': '901112233'}
+```
+
+### Topshiriq 11.4: Kalit bormi?
+- **Turi:** kod
+- **Qiyinlik:** o'rta
+- **Shart:**
+  1. Berilgan: `profil = {"ism": "Dilnoza", "shahar": "Samarqand"}`.
+  2. Foydalanuvchidan kalit nomini so'rang (masalan `ism` yoki `email`).
+  3. Shu kalit dict da bo'lsa `Bor`, bo'lmasa `Yo'q` chiqaring.
+- **Maslahat:** `if kalit in profil:`
+- **Kutilgan natija:** (namuna) `ism` → `Bor`; `email` → `Yo'q`.
+
+### Topshiriq 11.5: get bilan o'qish
+- **Turi:** kod
+- **Qiyinlik:** o'rta
+- **Shart:**
+  1. Berilgan: `mahsulot = {"nomi": "non", "narx": 4000}`.
+  2. Foydalanuvchidan kalit so'rang.
+  3. `get` yordamida qiymatni oling: kalit topilmasa `"Topilmadi"` chiqsin.
+  4. Natijani bitta `print` bilan chiqaring.
+- **Maslahat:** `mahsulot.get(kalit, "Topilmadi")`
+- **Kutilgan natija:** (namuna) `narx` → `4000`; `rang` → `Topilmadi`.
+
+### Topshiriq 11.6: Qaysi tuzilma?
+- **Turi:** nazariy
+- **Qiyinlik:** o'rta
+- **Shart:** Har bir holat uchun `list`, `tuple`, `set` yoki `dict` tanlang va **bitta qisqa gap** bilan sabab yozing:
+  1. O'quvchining ismi, yoshi va shahri — maydon nomi bilan saqlash kerak.
+  2. Darsdagi baholar ketma-ketligi (tartib muhim, yangi baho qo'shiladi).
+  3. Bir kunda saytga kirgan **noyob** foydalanuvchi ID lari.
+  4. GPS nuqtasi (kenglik, uzunlik) — o'zgarmas juftlik.
+- **Maslahat:** "nom bilan qidirish" → dict; "takrorlanmas" → set; "o'zgarmas tartib" → tuple.
+- **Kutilgan natija:** 4 ta holatning har birida tuzilma nomi + 1 gap izoh bor. (Tayyor javoblar yozilmasin — o'zingiz asoslang.)
+
+### Topshiriq 11.7: Xatoni top
+- **Turi:** xato qidirish
+- **Qiyinlik:** o'rta
+- **Shart:** Quyidagi kod ishlamaydi yoki noto'g'ri natija beradi. Xatolarni toping va tuzating.
+```python
+talaba = {"ism", "Ali", "yosh", 17}
+print(talaba["ism"])
+print(len(talaba))
+```
+Dastur tuzatilgach chiqishi kerak:
+```
+Ali
+2
+```
+- **Maslahat:** bu yerda set emas, dict kerak — `kalit: qiymat` ko'rinishi.
+- **Kutilgan natija:** Kod ishga tushadi; chiqishda birinchi qator `Ali`, ikkinchi qator `2`. To'liq yechim kodini shu yerga ko'chirib qo'ymang — o'zingiz yozing.
+
+### Topshiriq 11.8: Mini loyiha: "Kontakt"
+- **Turi:** loyiha
+- **Qiyinlik:** qiyin
+- **Shart:**
+  1. Bo'sh dict dan boshlang: `kontakt = {}`.
+  2. Foydalanuvchidan ketma-ket so'rang: ism, telefon, shahar (`input` — 3 marta).
+  3. Ularni dict ga yozing: kalitlar `"ism"`, `"telefon"`, `"shahar"`.
+  4. Chiqaring:
+     - butun `kontakt`;
+     - juftliklar soni (`len`);
+     - faqat ism (`kontakt["ism"]`);
+     - agar `"telefon"` kaliti bo'lsa `Telefon kiritilgan`, aks holda `Telefon yo'q`.
+  5. `for` ishlatmang.
+- **Maslahat:** avval uchta `input`, keyin kalitlarga yozing; oxirida `if "telefon" in kontakt:`.
+- **Kutilgan natija:** (`Ali`, `901112233`, `Toshkent` kiritilsa — namuna)
+```
+{'ism': 'Ali', 'telefon': '901112233', 'shahar': 'Toshkent'}
+3
+Ali
+Telefon kiritilgan
+```
+
+---
+
+# Qo'shimcha: umumiy takrorlash topshiriqlari (1–11-mavzular)
 
 `slug: umumiy-takrorlash`
 
@@ -1840,8 +2083,8 @@ Bu bo'lim alohida sahifa bo'lib, barcha mavzular bo'yicha bilimni mustahkamlaydi
 ### Takrorlash 1: Mavzularni bog'la
 - **Turi:** nazariy
 - **Qiyinlik:** o'rta
-- **Shart:** Quyidagi tushunchalarni mos mavzuga joylang: algoritm, API, interpretator, f-string, bool, request/response, `type()`, `input()`, snake_case, ma'lumotlar bazasi, `if/elif/else`, `and/or/not`, `list`, `append`, indeks, `tuple`, immutable, unpacking, `set`, `add`, `discard`, noyoblik.
-- **Kutilgan natija:** Har bir tushuncha tegishli mavzu (1–10) ostida.
+- **Shart:** Quyidagi tushunchalarni mos mavzuga joylang: algoritm, API, interpretator, f-string, bool, request/response, `type()`, `input()`, snake_case, ma'lumotlar bazasi, `if/elif/else`, `and/or/not`, `list`, `append`, indeks, `tuple`, immutable, unpacking, `set`, `add`, `discard`, noyoblik, `dict`, kalit, `get`.
+- **Kutilgan natija:** Har bir tushuncha tegishli mavzu (1–11) ostida joylashgan; javob jadvali berilmagan.
 
 ### Takrorlash 2: Yagona dastur
 - **Turi:** loyiha

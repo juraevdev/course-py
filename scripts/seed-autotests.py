@@ -983,6 +983,141 @@ SPECS: dict[str, tuple[str, str | None, TestsSpec]] = {
             ),
         ],
     ),
+    # ---- 11-mavzu: dict (lug'at) ----
+    "Talaba lug'ati": (
+        "CODE",
+        None,
+        [
+            (
+                "dict + len=3",
+                "",
+                "{'ism': 'Ali', 'yosh': 17, 'shahar': 'Toshkent'}\n3",
+                [
+                    '{"ism": "Ali", "yosh": 17, "shahar": "Toshkent"}\n3',
+                ],
+                "ANY_OF",
+                r"\{|dict\s*\(",
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Kalit bo'yicha o'qish": (
+        "CODE",
+        None,
+        [
+            (
+                "nomi + yil",
+                "",
+                "Python asoslari\n2024",
+                [],
+                "FLEXIBLE",
+                r"\[.+\]",
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Yangi maydon qo'sh": (
+        "CODE",
+        INPUT_NOTE,
+        [
+            (
+                "telefon qo'shish",
+                "901112233\n",
+                "{'ism': 'Sami', 'yosh': 16, 'telefon': '901112233'}",
+                [
+                    '{"ism": "Sami", "yosh": 16, "telefon": "901112233"}',
+                ],
+                "ANY_OF",
+                r"\[.+\]\s*=",
+                1,
+                0,
+            ),
+        ],
+    ),
+    "Kalit bormi?": (
+        "CODE",
+        INPUT_NOTE,
+        [
+            (
+                "ism → Bor",
+                "ism\n",
+                "Bor",
+                [],
+                "FLEXIBLE",
+                r"\bin\b",
+                1,
+                0,
+            ),
+            (
+                "email → Yo'q",
+                "email\n",
+                "Yo'q",
+                ["Yo‘q", "Yoq"],
+                "ANY_OF",
+                r"\bin\b",
+                1,
+                1,
+            ),
+        ],
+    ),
+    "get bilan o'qish": (
+        "CODE",
+        INPUT_NOTE,
+        [
+            (
+                "narx → 4000",
+                "narx\n",
+                "4000",
+                [],
+                "FLEXIBLE",
+                r"\.get\s*\(",
+                1,
+                0,
+            ),
+            (
+                "rang → Topilmadi",
+                "rang\n",
+                "Topilmadi",
+                [],
+                "FLEXIBLE",
+                r"\.get\s*\(",
+                1,
+                1,
+            ),
+        ],
+    ),
+    'Mini loyiha: "Kontakt"': (
+        "CODE",
+        INPUT_NOTE,
+        [
+            (
+                "Ali kontakt",
+                "Ali\n901112233\nToshkent\n",
+                "{'ism': 'Ali', 'telefon': '901112233', 'shahar': 'Toshkent'}\n3\nAli\nTelefon kiritilgan",
+                [
+                    '{"ism": "Ali", "telefon": "901112233", "shahar": "Toshkent"}\n3\nAli\nTelefon kiritilgan',
+                ],
+                "ANY_OF",
+                r"\{|dict\s*\(",
+                1,
+                0,
+            ),
+            (
+                "Dilnoza kontakt",
+                "Dilnoza\n998001122\nBuxoro\n",
+                "{'ism': 'Dilnoza', 'telefon': '998001122', 'shahar': 'Buxoro'}\n3\nDilnoza\nTelefon kiritilgan",
+                [
+                    '{"ism": "Dilnoza", "telefon": "998001122", "shahar": "Buxoro"}\n3\nDilnoza\nTelefon kiritilgan',
+                ],
+                "ANY_OF",
+                r"\{|dict\s*\(",
+                1,
+                1,
+            ),
+        ],
+    ),
 }
 
 # "Xatoni top" dublikatlari: faqat descriptionda f-string / o'zgaruvchi nomlash
