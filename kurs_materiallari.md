@@ -1,8 +1,8 @@
-# Python kursi: 1–11-mavzular uchun qo'shimcha materiallar
+# Python kursi: 1–12-mavzular uchun qo'shimcha materiallar
 
 ## Cursor uchun ko'rsatma
 
-Quyida o'quvchilar uchun 11 ta mavzuning qo'shimcha materiallari bor. Har bir mavzu bir xil tuzilishga ega:
+Quyida o'quvchilar uchun 12 ta mavzuning qo'shimcha materiallari bor. Har bir mavzu bir xil tuzilishga ega:
 
 1. **Qisqacha mazmun**: mavzu kartasi uchun 1–2 gap
 2. **Qo'shimcha tushuntirish**: asosiy matn
@@ -2074,7 +2074,259 @@ Telefon kiritilgan
 
 ---
 
-# Qo'shimcha: umumiy takrorlash topshiriqlari (1–11-mavzular)
+# 12-mavzu: for va while
+
+`slug: for-va-while`
+
+## Qisqacha mazmun
+Takrorlanadigan ishlarni avtomatlashtirishni o'rganamiz: `for` (ro'yxat / `range` bo'ylab) va `while` (shart rost ekan), hamda `break` / `continue`.
+
+## Qo'shimcha tushuntirish
+
+**Nima uchun tsikl kerak?**
+Ba'zi ishlarni bir necha marta takrorlash kerak: 10 ta son chiqarish, ro'yxatdagi har bir meva nomini yozish, foydalanuvchi to'g'ri javob berguncha so'rash. Har safar `print` ni qo'lda ko'paytirish o'rniga **tsikl** yoziladi.
+
+**for: ketma-ketlik bo'ylab**
+`for` har bir elementni birma-bir oladi:
+```python
+mevalar = ["olma", "anor", "banan"]
+for meva in mevalar:
+    print(meva)
+```
+Bu yerda `meva` — har safar keyingi element. Blok `:` dan keyin **indent** bilan yoziladi.
+
+**range(): sonlar ketma-ketligi**
+Aniq marta takrorlash yoki 0..n sonlar uchun `range` qulay:
+```python
+for i in range(5):        # 0, 1, 2, 3, 4
+    print(i)
+
+for i in range(1, 6):     # 1, 2, 3, 4, 5
+    print(i)
+
+for i in range(0, 10, 2): # 0, 2, 4, 6, 8
+    print(i)
+```
+`range(start, stop)` da `stop` **kirmaydi**. `range(n)` — `0` dan `n-1` gacha.
+
+**for + list: yig'indi / sanash**
+```python
+sonlar = [2, 5, 8]
+yigindi = 0
+for s in sonlar:
+    yigindi = yigindi + s
+print(yigindi)  # 15
+```
+
+**while: shart rost ekan**
+`while` shart `True` bo'lganicha takrorlaydi:
+```python
+n = 1
+while n <= 5:
+    print(n)
+    n = n + 1
+```
+Diqqat: shartni o'zgartiruvchi qadam (`n = n + 1`) bo'lmasa, tsikl **cheksiz** davom etadi.
+
+**break va continue (qisqa)**
+```python
+for i in range(10):
+    if i == 3:
+        continue   # shu qadamni o'tkazib yuboradi
+    if i == 7:
+        break      # tsiklni to'liq to'xtatadi
+    print(i)
+```
+- `continue` — joriy qadamni tashlab, keyingisiga o'tadi
+- `break` — tsiklni butunlay to'xtatadi
+
+**for yoki while?**
+| Holat | Tanlov |
+|---|---|
+| Ro'yxat / `range` bo'ylab aniq marta | `for` |
+| "Shart rost ekan" (necha marta noma'lum) | `while` |
+| Foydalanuvchi to'g'ri kiritguncha | odatda `while` |
+
+**input() bilan while**
+```python
+javob = ""
+while javob != "ha":
+    javob = input("Davom etamizmi? (ha/yo'q): ")
+print("Yaxshi")
+```
+
+**Eslatma:** `for` va `while` bloklarida ham indent muhim. `else` tsikl bilan ham bor, lekin bu mavzuda asosiy e'tibor `for`, `range`, `while`, `break`/`continue` ga.
+
+## Asosiy tushunchalar
+- **Tsikl (loop)**: bir xil ishni qayta-qayta bajarish
+- **`for`**: ketma-ketlik (list, tuple, `range`, ...) bo'ylab aylanadi
+- **`range(start, stop, step)`**: sonlar ketma-ketligi (`stop` kirmaydi)
+- **`while`**: shart rost ekan takrorlaydi
+- **`break`**: tsiklni to'xtatadi
+- **`continue`**: joriy qadamni o'tkazib yuboradi
+- **Cheksiz tsikl**: shart hech qachon yolg'on bo'lmasa (ehtiyot bo'ling)
+
+## Kod namunalari
+
+```python
+# 1) for + list
+ismlar = ["Ali", "Vali", "Sami"]
+for ism in ismlar:
+    print(f"Salom, {ism}!")
+```
+
+```python
+# 2) for + range
+for i in range(1, 6):
+    print(i * i)
+```
+
+```python
+# 3) while: hisoblash
+son = int(input())
+yigindi = 0
+i = 1
+while i <= son:
+    yigindi = yigindi + i
+    i = i + 1
+print(yigindi)
+```
+
+```python
+# 4) break
+while True:
+    x = input()
+    if x == "stop":
+        break
+    print(x)
+```
+
+## Tez-tez uchraydigan xatolar
+- **`:` ni unutish:** `for x in royxat` oxirida ikki nuqta kerak.
+- **Indent yo'q:** tsikl tanasi ichkariga surilmasa `IndentationError`.
+- **`range` da stop kiritish:** `range(5)` → 0..4, 1..5 emas.
+- **while da qadam yo'q:** `n` o'zgarmasa cheksiz tsikl.
+- **`=` va `==` chalkashligi:** `while javob = "ha"` xato; `==` kerak.
+- **for ichida listni o'zgartirish:** boshlang'ichda yangi list yig'ing yoki `append` ni diqqat bilan ishlating.
+
+## Resurslar
+- [W3Schools: Python For Loops](https://www.w3schools.com/python/python_for_loops.asp): `for` va `range`
+- [W3Schools: Python While Loops](https://www.w3schools.com/python/python_while_loops.asp): `while`, `break`, `continue`
+- [Python docs: for statements](https://docs.python.org/3/tutorial/controlflow.html#for-statements): rasmiy qo'llanma
+- [Real Python: Python for Loops](https://realpython.com/python-for-loop/): chuqurroq tushuntirish
+
+## Topshiriqlar
+
+### Topshiriq 12.1: Ro'yxatni chiqar
+- **Turi:** kod
+- **Qiyinlik:** oson
+- **Shart:** `mevalar = ["olma", "anor", "banan"]` berilgan. `for` yordamida har bir meva nomini alohida qatorda chiqaring.
+- **Maslahat:** `for meva in mevalar:` va `print(meva)`.
+- **Kutilgan natija:**
+```
+olma
+anor
+banan
+```
+
+### Topshiriq 12.2: 1 dan N gacha
+- **Turi:** kod
+- **Qiyinlik:** oson
+- **Shart:** Foydalanuvchidan butun son `n` so'rang. `for` va `range` yordamida 1 dan `n` gacha (n ham kiradi) sonlarni chiqaring.
+- **Maslahat:** `range(1, n + 1)`.
+- **Kutilgan natija:** (`5` kiritilsa)
+```
+1
+2
+3
+4
+5
+```
+
+### Topshiriq 12.3: Juft sonlar
+- **Turi:** kod
+- **Qiyinlik:** oson
+- **Shart:** `for` va `range` bilan 2 dan 10 gacha juft sonlarni chiqaring (2, 4, 6, 8, 10).
+- **Maslahat:** `range(2, 11, 2)` yoki `if i % 2 == 0`.
+- **Kutilgan natija:**
+```
+2
+4
+6
+8
+10
+```
+
+### Topshiriq 12.4: Yig'indi
+- **Turi:** kod
+- **Qiyinlik:** o'rta
+- **Shart:** `sonlar = [3, 7, 2, 8]` berilgan. `for` bilan yig'indini hisoblab chiqaring.
+- **Maslahat:** `yigindi = 0`, keyin har bir elementni qo'shing.
+- **Kutilgan natija:**
+```
+20
+```
+
+### Topshiriq 12.5: while bilan sanash
+- **Turi:** kod
+- **Qiyinlik:** o'rta
+- **Shart:** Foydalanuvchidan butun son `n` so'rang. `while` yordamida `n` dan 1 gacha (pasayib) sonlarni chiqaring.
+- **Maslahat:** `while n >= 1:`, ichida `print(n)` va `n = n - 1`.
+- **Kutilgan natija:** (`4` kiritilsa)
+```
+4
+3
+2
+1
+```
+
+### Topshiriq 12.6: stop gacha
+- **Turi:** kod
+- **Qiyinlik:** o'rta
+- **Shart:** Foydalanuvchidan matn so'rang (`input`). Agar matn `stop` bo'lsa, tsiklni to'xtating. Aks holda matnni chiqarib, yana so'rang. `while True` va `break` ishlating.
+- **Maslahat:** `if x == "stop": break`.
+- **Kutilgan natija:** (`salom`, `dunyo`, `stop` kiritilsa)
+```
+salom
+dunyo
+```
+
+### Topshiriq 12.7: Xatoni top
+- **Turi:** xato qidirish
+- **Qiyinlik:** o'rta
+- **Shart:** Quyidagi kodda xatolar bor. Toping va tuzating (natija: 1 2 3 4 5, har biri alohida qatorda):
+```python
+i = 1
+while i <= 5
+print(i)
+i = i + 1
+```
+- **Maslahat:** `:` va indentatsiya; `i` ni oshirish `while` ichida bo'lishi kerak.
+- **Kutilgan natija:**
+```python
+i = 1
+while i <= 5:
+    print(i)
+    i = i + 1
+```
+
+### Topshiriq 12.8: Mini loyiha: "Baholar o'rtachasi"
+- **Turi:** loyiha
+- **Qiyinlik:** qiyin
+- **Shart:** Foydalanuvchidan nechta baho kiritishini so'rang (`n`, butun son). Keyin `n` marta baho so'rang (`for` + `input`). Barcha baholar yig'indisidan o'rtachani hisoblang va chiqaring. Agar `n <= 0` bo'lsa, `Noto'g'ri` deb yozing va boshqa hech narsa so'ramang.
+- **Maslahat:** avval `if n <= 0`, aks holda `for _ in range(n):`; o'rtacha = yig'indi / n.
+- **Kutilgan natija:** (`3`, keyin `5`, `4`, `5` kiritilsa)
+```
+4.666666666666667
+```
+(`0` kiritilsa)
+```
+Noto'g'ri
+```
+
+---
+
+# Qo'shimcha: umumiy takrorlash topshiriqlari (1–12-mavzular)
 
 `slug: umumiy-takrorlash`
 
@@ -2083,8 +2335,8 @@ Bu bo'lim alohida sahifa bo'lib, barcha mavzular bo'yicha bilimni mustahkamlaydi
 ### Takrorlash 1: Mavzularni bog'la
 - **Turi:** nazariy
 - **Qiyinlik:** o'rta
-- **Shart:** Quyidagi tushunchalarni mos mavzuga joylang: algoritm, API, interpretator, f-string, bool, request/response, `type()`, `input()`, snake_case, ma'lumotlar bazasi, `if/elif/else`, `and/or/not`, `list`, `append`, indeks, `tuple`, immutable, unpacking, `set`, `add`, `discard`, noyoblik, `dict`, kalit, `get`.
-- **Kutilgan natija:** Har bir tushuncha tegishli mavzu (1–11) ostida joylashgan; javob jadvali berilmagan.
+- **Shart:** Quyidagi tushunchalarni mos mavzuga joylang: algoritm, API, interpretator, f-string, bool, request/response, `type()`, `input()`, snake_case, ma'lumotlar bazasi, `if/elif/else`, `and/or/not`, `list`, `append`, indeks, `tuple`, immutable, unpacking, `set`, `add`, `discard`, noyoblik, `dict`, kalit, `get`, `for`, `while`, `range`, `break`, `continue`.
+- **Kutilgan natija:** Har bir tushuncha tegishli mavzu (1–12) ostida joylashgan; javob jadvali berilmagan.
 
 ### Takrorlash 2: Yagona dastur
 - **Turi:** loyiha
